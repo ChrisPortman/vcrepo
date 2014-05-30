@@ -1,0 +1,5 @@
+require_relative 'repositories/config'
+require_relative 'repositories/initialize'
+require_relative 'repositories/repo'
+require_relative 'repositories/repo/yum'
+require_relative 'repositories/repo/apt'

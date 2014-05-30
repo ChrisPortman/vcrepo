@@ -1,0 +1,25 @@
+---
+  repo_base_location: '/tmp/repos/'
+
+  repositories:
+    rhel6-updates:
+      type: yum
+      os: rhel
+      name: updates
+      version: '6'
+      arch: x86_x64
+      source: 'rhns://rhel6Server/updates'
+    rhel6-x86_64-puppet_products:
+      type: yum
+      os: rhel
+      name: puppet-products
+      version: '6'
+      arch: x86_x64
+      source: 'http://yum.puppetlabs.com/el/6/products/x86_64/'
+    ubuntu:
+      type: yum
+      os: ubuntu
+      name: main
+      version: '14.04'
+      arch: x86_x64
+      source: 'http://mirror.optusnet.com.au/ubuntu'

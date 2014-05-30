@@ -1,0 +1,6 @@
+<% @dirs.each do |val| %>
+<a href="/<%= @rev %>/repos/<%= @repo_name ? "#{@repo_name}/" : '' %><%= val %>/"><%= val.split('/').last %>/</a><br />
+<% end %>
+<% @files.each do |val| %>
+<a href="/<%= @rev %>/repos/<%= @repo_name ? "#{@repo_name}/" : '' %><%= val %>"><%= val.split('/').last %></a><br />
+<% end %>
