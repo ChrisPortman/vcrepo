@@ -1,0 +1,28 @@
+---
+  rhn_username: rhnuser
+  rhn_password: rhnpass
+  repo_base_location: '/tmp/repos/'
+
+  repositories:
+    rhel6-x86_64-puppet_products:
+      type: yum
+      os: rhel
+      name: puppet-products
+      version: '6'
+      arch: x86_64
+      source: 'http://yum.puppetlabs.com/el/6/products/x86_64/'
+    rhel6-x86_64-gitlab:
+      type: yum
+      os: rhel
+      name: gitlab
+      version: '6'
+      arch: x86_64
+      source: 'local'
+    rhel6-x86_64-updates:
+      type: yum
+      os: rhel
+      version: 6
+      arch: x86_64
+      name: updates
+      source: 'rhns:///rhel-x86_64-server-6'
+

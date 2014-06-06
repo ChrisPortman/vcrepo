@@ -1,2 +1,0 @@
-2014/05/28-08:33:15: Running Git command: git --work-tree=/tmp/repos/rhel/6/x86_x64/updates --git-dir=/tmp/repos/rhel/6/x86_x64/updates/.git init
-2014/05/28-08:33:15: Running Git command: git --work-tree=/tmp/repos/rhel/6/x86_x64/updates --git-dir=/tmp/repos/rhel/6/x86_x64/updates/.git annex init

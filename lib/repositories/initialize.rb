@@ -7,7 +7,6 @@ module Repositories
     end
 
     def log(msg, file='general.log')
-      @@logdir ||= Repositories.config['logdir'] || './logs'
       logfile = File.join(@@logdir, file)
 
       time = Time.new
@@ -22,8 +21,13 @@ module Repositories
       end
     end
 
+    @@logdir ||= Repositories.config['logdir'] || './logs'
+    unless File.directory? @@logdir
+      FileUtils.mkpath(@@logdir)
+    end
+
     Repositories.config['repositories'].each do |repo, settings|
-      Repositories::Repo.new(settings['type'], settings['os'], settings['name'], settings['version'], settings['arch'], settings['source'])
+      Repositories::Repo.create(settings['type'], settings['os'], settings['name'], settings['version'].to_s, settings['arch'], settings['source'])
     end
   end
 end
