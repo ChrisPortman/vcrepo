@@ -27,34 +27,17 @@ module Repositories
       ]
     end
     
-    def initialize(os, name, version, arch, source)
-      os      or raise RuntimeError, "Repo must have an OS"
-      name    or raise RuntimeError, "Repo must have a name"
-      version or raise RuntimeError, "Repo must have a version"
-      arch    or raise RuntimeError, "Repo must have an arch"
-      source  or raise RuntimeError, "Repo must have a source"
-      
-      @os       = os
-      @name     = name
-      @version  = version
-      @arch     = arch
-      @source   = source
-
-      @full_id  = "#{@os}-#{version}-#{arch}-#{name}"
-      @logger   = Logger.new(File.join(Repositories.config['logdir'] || './logs', @full_id))
+    def initialize(name, source)
+      @name     = name   or raise RuntimeError, "Repo must have a name"
+      @source   = source or raise RuntimeError, "Repo must have a source"
+      @type     = 'yum'
+      @logger   = Logger.new(File.join(Repositories.config['logdir'] || './logs', @name))
 
       @dir      = check_dir
       @git_repo = check_git_repo
       @repo_dir = check_repo_dir
     end
     
-    def check_dir
-      base = Repositories.config['repo_base_location']
-      dir  = File.join(base, @os, @version, @arch, @name)
-      File.directory?(dir) || FileUtils.mkdir_p(dir)
-      dir
-    end
-
     def sync
       if locked?
         return [ 402, "Sync is already in progress" ]

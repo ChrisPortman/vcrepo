@@ -18,13 +18,13 @@ module Repositories
     #
     # Creates the repository object by calling .new on the appropriate
     # child class depending on the type.
-    def self.create(type, os, name, version, arch, source)
-      unless @@repositories["#{os}-#{name}"]
+    def self.create(type, name, source)
+      unless @@repositories[name]
         case type
           when 'yum'
-            @@repositories["#{os}-#{version}-#{arch}-#{name}"] = Repositories::Repo::Yum.new(os, name, version, arch, source)
+            @@repositories[name] = Repositories::Repo::Yum.new(name, source)
           when 'apt'
-            @@repositories["#{os}-#{version}-#{arch}-#{name}"] = Repositories::Repo::Apt.new(os, name, version, arch, source)
+            @@repositories[name] = Repositories::Repo::Apt.new(name, source)
           else
         end
       end
@@ -62,6 +62,13 @@ module Repositories
       end
     end
 
+    def check_dir
+      base = Repositories.config['repo_base_location']
+      dir  = File.join(base, @type, @name)
+      File.directory?(dir) || FileUtils.mkdir_p(dir)
+      dir
+    end
+
     def check_repo_dir
       dir = File.join(@dir, 'repo')
       File.directory?(dir) || FileUtils.mkdir_p(dir)
@@ -97,7 +104,7 @@ module Repositories
           @logger.info('Sync complete')
         end
         Process.detach(pid)
-        [ 200, "Sync of #{@full_id} has been started." ]
+        [ 200, "Sync of #{@name} has been started." ]
       else
         [ 402, "Failed to run sync.  Processes required lftp but it does not appear to be installed" ]
       end
@@ -111,7 +118,7 @@ module Repositories
         unlock
       end
       Process.detach(pid)
-      [ 200, "Sync of #{@full_id} has been started." ]
+      [ 200, "Sync of #{@name} has been started." ]
     end
 
     def lock
