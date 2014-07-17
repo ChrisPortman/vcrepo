@@ -1,10 +1,6 @@
 module Repositories
   class Repo
     ### Class Variables ###
-
-    #metadata is just details about what repos we have for what OS's
-    @@metadata     = {}
-
     #Stores the repository object for each repository
     @@repositories = {}
 
@@ -57,30 +53,6 @@ module Repositories
       ret
     end
 
-    # self.oslist self.version_list self.archs self.repo_names
-    #
-    # Args:
-    #   The prerequsites for drilling down to the info required
-    #
-    # These methods get a all the items relating to the parent.
-    # E.g. self.oslist returns a list of all the OS's for which we have repos
-    # self.version_list(os) returns a list of the versions of os we have repos for.
-    def self.oslist
-      @@metadata.keys
-    end
-
-    def self.version_list(os)
-      @@metadata[os].keys
-    end
-
-    def self.archs(os, version)
-      @@metadata[os][version].keys
-    end
-
-    def self.repo_names(os, version, arch)
-      @@metadata[os][version][arch].keys
-    end
-
     # self.sync_all
     #
     # Triggers a sync on all repos.
@@ -88,16 +60,6 @@ module Repositories
       @repositories.each do |name, repo|
         repo.sync
       end
-    end
-
-    # register
-    #
-    # registers this repo instance with the @@repositories class var.
-    def register
-      @@metadata[@os]                         ||= {}
-      @@metadata[@os][@version]               ||= {}
-      @@metadata[@os][@version][@arch]        ||= {}
-      @@metadata[@os][@version][@arch][@name] ||= {}
     end
 
     def check_repo_dir
