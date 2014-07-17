@@ -4,8 +4,8 @@ require 'fileutils'
 
 class RepoError < RuntimeError
   def initialize(msg, status=402)
-    super(msg)
     @status = status
+    super(msg)
   end
 
   attr_reader 'status'
