@@ -261,17 +261,21 @@ module Repositories
     def find_leaf(name, release)
       path   = name.split('/')
       leaf   = path.pop
-      tree = find_commit(release).tree
-
-      path.each do |p|
-        tree.each_tree do |t|
-          tree = @git_repo.lookup(t[:oid]) and break if t[:name].to_s == p
+      if commit = find_commit(release)
+        tree = commit.tree
+        path.each do |p|
+          tree.each_tree do |t|
+            tree = @git_repo.lookup(t[:oid]) and break if t[:name].to_s == p
+          end
         end
+  
+        tree.each do |i|
+          return i if i[:name].to_s == leaf
+        end
+      else
+        raise RepoError.new("Could not find the path '#{name}' in revision #{release}", 404)
       end
 
-      tree.each do |i|
-        return i if i[:name].to_s == leaf
-      end
       nil
     end
 
