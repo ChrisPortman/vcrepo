@@ -46,8 +46,6 @@ module Repositories
       @dir      = check_dir
       @git_repo = check_git_repo
       @repo_dir = check_repo_dir
-      
-      register()
     end
     
     def check_dir
