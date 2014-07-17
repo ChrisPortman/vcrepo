@@ -27,7 +27,7 @@ module Repositories
     end
 
     Repositories.config['repositories'].each do |repo, settings|
-      Repositories::Repo.create(settings['type'], settings['os'], settings['name'], settings['version'].to_s, settings['arch'], settings['source'])
+      Repositories::Repo.create(settings['type'], repo, settings['source'])
     end
   end
 end
