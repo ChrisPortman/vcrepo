@@ -71,3 +71,8 @@ By default when you browse to /repos on your server, it will assume that you wan
 ### Intended Workflow
 Basically the idea is to cron the syncing of the repos nightly.  Then there will be a nightly commit of in the GIT repo.  We will then be able to tag a specific commit as 'production', 'dev' whatever.  When we want to make new packages available to and environment, just move the tag and done.
 
+
+## TODO
+  * Look at simplifying the repos filesystem structure.  I dont think it really needs to be repo_base_location/os/vers/arch.  It can more likely be repo_base_location/{yum|apt}/repo_name
+  * Make sure that if someone has been mucking about in the workdir and not left it master:HEAD that the syncs dont loose the plot.
+  * Move the .package dir out of .git. It shouldnt really live there, but on the other hand, its an easy way to make sure its out of the way of the commits.
