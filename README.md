@@ -35,14 +35,10 @@ Then in there, define each repository. You should end up with something like thi
 repositories:
   shinyrepo_myos_osvers_myarch:
     type: yum
-    os: rhel
-    name: puppet-products
-    version: '6'
-    arch: x86_64
     source: 'http://yum.puppetlabs.com/el/6/products/x86_64/'
 ```
 
-The key for the repo, in this case 'shinyrepo_myos_osvers_myarch' can be whatever you like.  It will be what shows up in the list of repositories when you browse to /repos on your server.  The key/values inside the hash depend on the type of repository your creating.  In this case, its a yum (I havent implemented any other types yet) repository.  The os, name, version, arch fields are used in the creation of the repo on disk.  The source is where to get the packages from.
+The key for the repo, in this case 'shinyrepo_myos_osvers_myarch' can be whatever you like.  It will be what shows up in the list of repositories when you browse to /repos on your server.  The key/values inside the hash depend on the type of repository your creating.  In this case, its a yum (I havent implemented any other types yet) repository.  The source is where to get the packages from.
 
 Source can be a http web address (not https though for the time being, lftp seems to bomb out randomly with https), an rhn address for syncing from redhat or the work 'local'.
 
@@ -62,9 +58,9 @@ When its finished, browse to /repos/ and click on your repo.  You should see pac
 ### All the GIT Stuff
 Once you've got to the point you've synced a repo and machines can use it, you can start managing your repository a bit more.
 
-When the service starts up, it will check that 'repo_base_location' is a directory and create it if it can and needs to.  It will then, create the directory structure for each repo.  For yum repos, that looks like'repo_base_location/os/vers/arch/your_repo/repo'.  Inside 'your_repo' it will initialise a GIT repository if its not already one.
+When the service starts up, it will check that 'repo_base_location' is a directory and create it if it can and needs to.  It will then, create the directory structure for each repo.  For yum repos, that looks like '/repo_base_location/type/your_repo/repo'.  Inside 'your_repo' it will initialise a GIT repository if its not already one.
 
-What happens when a sync runs, is it mirrors all the packages into 'repo_base_location'/os/vers/arch/reponame/repo/'.  In the case of local repos, you have already done that so it doesnt have to mirror anything.  It then looks for any package files in repos/ that are not links, moves them to 'your_repo/.git/packages/' and then symlinks them back to 'your_repo/repo/'.  It then generates the repo metadata and adds and commits it to git with a commit comment being the date and time. The commit contains all the *links* but not the packages (I tried commiting the packages. Worked fine with ~10, not so much with 1000).  Over time the .git/.packages directory will accumulate all the packages that the repo has seen, however, a given commit will only have links to a subset.
+What happens when a sync runs, is it mirrors all the packages into '/repo_base_location/type/reponame/repo/'.  In the case of local repos, you have already done that so it doesnt have to mirror anything.  It then looks for any package files in repos/ that are not links, moves them to 'your_repo/.git/packages/' and then symlinks them back to 'your_repo/repo/'.  It then generates the repo metadata and adds and commits it to git with a commit comment being the date and time. The commit contains all the *links* but not the packages (I tried commiting the packages. Worked fine with ~10, not so much with 1000).  Over time the .git/.packages directory will accumulate all the packages that the repo has seen, however, a given commit will only have links to a subset.
 
 By default when you browse to /repos on your server, it will assume that you want to look at the HEAD of the master branch.  You can override this by browsing to /branch|tag|commit_id/repos/ and then into the desired repository.  You can also configure yum to use a url that include the branch, tag, or commit_id.
 
@@ -73,6 +69,6 @@ Basically the idea is to cron the syncing of the repos nightly.  Then there will
 
 
 ## TODO
-  * Look at simplifying the repos filesystem structure.  I dont think it really needs to be repo_base_location/os/vers/arch.  It can more likely be repo_base_location/{yum|apt}/repo_name
+  * Look at simplifying the repos filesystem structure.  I dont think it really needs to be repo_base_location/os/vers/arch.  It can more likely be repo_base_location/{yum|apt}/repo_name - DONE
   * Make sure that if someone has been mucking about in the workdir and not left it master:HEAD that the syncs dont loose the plot.
   * Move the .package dir out of .git. It shouldnt really live there, but on the other hand, its an easy way to make sure its out of the way of the commits.
