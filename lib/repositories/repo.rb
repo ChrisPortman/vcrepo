@@ -79,46 +79,114 @@ module Repositories
       if File.directory?(File.join(dir, '.git'))
         Rugged::Repository.new(File.join(dir, '.git'))
       else
-        Rugged::Repository.init_at(dir)
+        repo = Rugged::Repository.init_at(dir)
+
+        git_author_name  = Repositories.config['git_author_name']  || 'repos'
+        git_author_email = Repositories.config['git_author_email'] || 'repos@repos.com'
+
+        Rugged::Commit.create(repo,
+          :author     => {:email => git_author_email, :name => git_author_name, :time => Time.now },
+          :committer  => {:email => git_author_email, :name => git_author_name, :time => Time.now },
+          :message    => "Initial commit",
+          :parents    => repo.empty? ? [] : [ repo.head.target ].compact,
+          :update_ref => 'HEAD',
+          :tree       => repo.lookup(repo.index.write_tree),
+        )
+
+        repo
       end
     end
 
-    def http_sync
-      if system('which lftp > /dev/null 2>&1')
-        pid = fork do
-          lock
-          # This hack because lftp doesnt consider the real file behind a symlink, but just the symlink itself
-          # It then goes ahead and deletes the symlinks and resyncs from scratch.
-          existing_files = Dir.glob(File.join(@dir, 'repo', '**', '*')).collect{ |file| "*#{File.basename(file)}" }
+    def repo_dir
+      dir = File.join(@git_repo.workdir, 'repo')
+      unless File.directory?(dir)
+        FileUtils.mkdir_p(dir)
+      end
+      dir
+    end
 
-          http_sync_includes = self.class.http_sync_include.collect { |inc| "-I #{inc}" }.join(' ')
-          http_sync_excludes = (self.class.http_sync_exclude + existing_files).flatten.collect { |exc| "-X \"#{exc}\"" }.join(' ')
+    def package_cache_dir
+      dir = File.join(Repositories.config['repo_base_location'], 'package_cache')
+      unless File.directory?(dir)
+        FileUtils.mkdir_p(dir)
+      end
+      dir
+    end
 
-          sync_cmd = "#{`which lftp`.chomp} -c '; mirror -P -c -e -vvv #{http_sync_includes} #{http_sync_excludes} #{@source} #{@repo_dir}'"
-          IO.popen(sync_cmd).each do |line|
-            @logger.info( line.chomp )
+    def sync
+      if locked?
+        return [ 402, "Sync is already in progress" ]
+      end
+
+      pid = fork do
+        @logger.info('Starting Sync')
+
+        lock
+        
+        #For non local sources, we will create a temporary working dir to sync to.  This avoids complications
+        #when someone has been messing about in the regular workdir (playing with tags or branching or something)
+        #For locally sourced repos though, its expected that the admin knows what theyre doing.
+        if source =~ /^local/
+          #This should make the repo look like the last commit on Master without clobering any manual adds since (we want to add those)
+          @git_repo.checkout(@git_repo.branches["master"], :strategy => :safe_create)
+        else
+          tmp_work_dir = File.join(Repositories.config['repo_base_location'], ".#{@name}-#{Time.new.to_i}")
+    
+          #create and use a temporary work dir so manual stuff in the normal work dir doesnt get in the way
+          unless File.directory?(tmp_work_dir)
+            FileUtils.mkdir_p(tmp_work_dir)
           end
+    
+          #save the real work dir
+          real_workdir = @git_repo.workdir
+    
+          #set the workdir of the GIT repository to the one supplied to the method
+          @git_repo.workdir = tmp_work_dir
+    
+          #Check the master branch out to the temp work dir.
+          @git_repo.checkout(@git_repo.branches["master"], :strategy => :force)
+        end
 
-          git_commit
-          unlock
+        #Run the sync source method which is defined in the repositories type class
+        begin
+          sync_source()
+        rescue RepoError => e
+          @logger.error("Sync of repository #{@name} failed: #{e.message}")
+        else
+          #commit the repo to git
+          git_commit()
           @logger.info('Sync complete')
         end
-        Process.detach(pid)
-        [ 200, "Sync of #{@name} has been started." ]
-      else
-        [ 402, "Failed to run sync.  Processes required lftp but it does not appear to be installed" ]
-      end
-    end
 
-    def local_sync
-      pid = fork do
-        lock
-          git_commit
-          @logger.info('Sync complete')
+        #remove the temporary work dir
+        FileUtils.rm_rf(tmp_work_dir) if tmp_work_dir
+
+        #Set the workdir of the GIT repo back to the real one
+        @git_repo.workdir = real_workdir if real_workdir
+
         unlock
       end
       Process.detach(pid)
       [ 200, "Sync of #{@name} has been started." ]
+    end
+
+    def http_sync
+      if system('which lftp > /dev/null 2>&1')
+        http_sync_includes = self.class.http_sync_include.collect { |inc| "-I #{inc}" }.join(' ')
+        http_sync_excludes = (self.class.http_sync_exclude).flatten.collect { |exc| "-X \"#{exc}\"" }.join(' ')
+
+        sync_cmd = "#{`which lftp`.chomp} -c '; mirror -P -c -e -L -vvv #{http_sync_includes} #{http_sync_excludes} #{@source} #{repo_dir}'"
+        
+        IO.popen(sync_cmd).each do |line|
+          @logger.info( line.chomp )
+        end
+      else
+        raise RepoError, "Failed to run sync.  Processes required lftp but it does not appear to be installed"
+      end
+    end
+
+    def local_sync
+      git_commit
     end
 
     def lock
@@ -140,9 +208,9 @@ module Repositories
 
       package_files = []
       self.class.package_patterns.each do |pattern|
-        package_files << Dir.glob(File.join(@dir, '**', pattern))
+        package_files << Dir.glob(File.join(@git_repo.workdir, '**', pattern))
       end
-
+      
       package_files.flatten.each do |file|
         link_package(file)
       end
@@ -169,13 +237,11 @@ module Repositories
     end
 
     def link_package(file)
-      packages_dir = File.join(@git_repo.path, 'packages')
-      unless File.directory?(packages_dir)
-        Dir.mkdir(packages_dir)
-      end
+      packages_dir = package_cache_dir()
 
       newfile = File.join(packages_dir, File.basename(file))
       File.exists?(newfile) ? FileUtils.rm(file) : FileUtils.mv(file, newfile)
+
       FileUtils.ln_s(newfile, file)
     end
 
@@ -216,14 +282,6 @@ module Repositories
       end
     end
 
-    # find_commit(ref)
-    #
-    # Args:
-    #   1) A the name of a tag or branch or a commit ID
-    #
-    # Returns a commit object that is the tip of the specified branch,
-    # the commit taged with the specified tag, or, the commit specified
-    # as the commit ID.
     def find_commit(release)
       return if @git_repo.empty?
 
@@ -248,16 +306,6 @@ module Repositories
       end
     end
 
-    # find_leaf(name, release)
-    #
-    # Args:
-    #   1) the name of the leaf (most likely a file)
-    #   2) the branch, tag or commit ID to find it in.
-    #
-    # Returns a git object that is the item requested by 'name' and from
-    # the branch/tag/commit ID specified by release.  Item is most likely   
-    # going to be a file, and the full relative path to the file should
-    # be supplied.
     def find_leaf(name, release)
       path   = name.split('/')
       leaf   = path.pop
@@ -268,7 +316,7 @@ module Repositories
             tree = @git_repo.lookup(t[:oid]) and break if t[:name].to_s == p
           end
         end
-  
+
         tree.each do |i|
           return i if i[:name].to_s == leaf
         end
@@ -279,35 +327,14 @@ module Repositories
       nil
     end
 
-    # updates?
-    #
-    # Checks the work dir against the master branch HEAD to and returns
-    # true if there are changes and false if not.
     def updates?
       if head_commit = find_commit("master")
-        diff = head_commit.tree.diff_workdir
-        diff.deltas.empty? ? false : true
+          package_patterns = self.class.respond_to?('package_patterns') ? self.class.package_patterns : ['*']
+          diff = head_commit.tree.diff_workdir(:recurse_untracked_dirs => true, :include_untracked => true, :paths => package_patterns)
+          diff.deltas.empty? ? false : true
       else
         true
       end
-    end
-    
-    def checkout(branch='master')
-      return if @git_repo.empty?
-      
-      #The current release of rugged doesnt have the checkout functionality.  
-      #Its in the dev tree, but I dont want to use it.  
-      #Ill just use the git command for now :(
-
-      worktree = @git_repo.workdir
-      gitdir   = @git_repo.path
-      
-      # Force the current work tree into alignment to its HEAD.  Git wont allow
-      # you checkout to another branch if the current work tree is tainted.
-      system("git --work-tree=#{worktree} --git-dir=#{gitdir} reset --hard HEAD > /dev/null 2>&1")
-      
-      # Checkout the desired branch
-      system("git --work-tree=#{worktree} --git-dir=#{gitdir} checkout #{branch} > /dev/null 2>&1")
     end
   end
 end
