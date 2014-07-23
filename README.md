@@ -64,11 +64,16 @@ What happens when a sync runs, is it mirrors all the packages into '/repo_base_l
 
 By default when you browse to /repos on your server, it will assume that you want to look at the HEAD of the master branch.  You can override this by browsing to /branch|tag|commit_id/repos/ and then into the desired repository.  You can also configure yum to use a url that include the branch, tag, or commit_id.
 
+### Package Cache
+All the packages that are synced into a repository are moved to the "package cache" and then symlinked back into the repository.  Its then the links that are version controlled in GIT rather than committing gigabytes of binary to the repo.
+
+The package cache is at /repo_base_dir/package_cache/.  All the packages get lumped in there together.  That way they can be deduped if say, rhel and centos have the same packages.
+
 ### Intended Workflow
 Basically the idea is to cron the syncing of the repos nightly.  Then there will be a nightly commit of in the GIT repo.  We will then be able to tag a specific commit as 'production', 'dev' whatever.  When we want to make new packages available to and environment, just move the tag and done.
 
 
 ## TODO
   * Look at simplifying the repos filesystem structure.  I dont think it really needs to be repo_base_location/os/vers/arch.  It can more likely be repo_base_location/{yum|apt}/repo_name - DONE
-  * Make sure that if someone has been mucking about in the workdir and not left it master:HEAD that the syncs dont loose the plot.
-  * Move the .package dir out of .git. It shouldnt really live there, but on the other hand, its an easy way to make sure its out of the way of the commits.
+  * Make sure that if someone has been mucking about in the workdir and not left it master:HEAD that the syncs dont loose the plot. - DONE
+  * Move the .package dir out of .git. It shouldnt really live there, but on the other hand, its an easy way to make sure its out of the way of the commits. - DONE
