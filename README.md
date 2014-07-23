@@ -22,6 +22,9 @@ cd /opt/repo-manager && rackup -p 80 config.ru
 ```
 6. Browse to 'http://your.server/repos'.  It will be pretty bare as there are no repos defined.
 
+From here, if you intend to sync RHN sources from channels other than your RHEL host is subscribed to, you will need to use a program from mrepo (gensystemid)
+TODO: Add more detail here....
+
 ## Using the Software
 ### Defining Repos
 Once installed, you need to define your repos.  The repo definitions live in the config.yaml.  In there, create a _repositories_ hash:
