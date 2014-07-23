@@ -1,6 +1,6 @@
 require 'fileutils'
 
-class Repositories::Repo::Apt < Repositories::Repo
+class Vcrepo::Repository::Apt < Vcrepo::Repository
   attr_reader :os, :name, :version, :arch, :source, :dir
   
   def self.annex_include
