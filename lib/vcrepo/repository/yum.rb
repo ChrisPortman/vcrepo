@@ -35,6 +35,7 @@ module Vcrepo
 
       @dir      = check_dir
       @git_repo = Vcrepo::Git.new(@dir, @name)
+      repo_dir
     end
 
     def sync_source

@@ -53,6 +53,9 @@ module Vcrepo
         if source =~ /^local/
           #This should make the repo look like the last commit on Master without clobering any manual adds since (we want to add those)
           @git_repo.safe_checkout("master")
+          prepare_repo()
+          @git_repo.commit
+          @logger.info('Sync complete')
         else
           tmp_work_dir = File.join(Vcrepo.config['repo_base_location'], ".#{@name}-#{Time.new.to_i}")
 
@@ -63,24 +66,22 @@ module Vcrepo
 
           #Check the master branch out to the temp work dir.
           @git_repo.hard_checkout("master", tmp_work_dir)
+
+          #Run the sync source method which is defined in the repositories type class
+          begin
+            sync_source()
+          rescue RepoError => e
+            @logger.error("Sync of repository #{@name} failed: #{e.message}")
+          else
+            #Move the packages to the cache and generate metadata then commit
+            prepare_repo()
+            @git_repo.commit
+            @logger.info('Sync complete')
+          end
+
+          #remove the temporary work dir
+          FileUtils.rm_rf(tmp_work_dir) if tmp_work_dir
         end
-
-        #Run the sync source method which is defined in the repositories type class
-        begin
-          sync_source()
-        rescue RepoError => e
-          @logger.error("Sync of repository #{@name} failed: #{e.message}")
-        else
-          #Move the packages to the cache and generate metadata
-          prepare_repo()
-
-          #commit the repo to git
-          @git_repo.commit
-          @logger.info('Sync complete')
-        end
-
-        #remove the temporary work dir
-        FileUtils.rm_rf(tmp_work_dir) if tmp_work_dir
 
         #Set the workdir of the GIT repo back to the real one
         @git_repo.reset_workdir
@@ -106,10 +107,6 @@ module Vcrepo
       end
     end
 
-    def local_sync
-      @git_repo.commit
-    end
-
     def lock
       FileUtils.touch(File.join(@git_repo.path, '.locked'))
     end
@@ -125,12 +122,6 @@ module Vcrepo
     def check_dir
       base = Vcrepo.config['repo_base_location']
       dir  = File.join(base, @type, @name)
-      File.directory?(dir) || FileUtils.mkdir_p(dir)
-      dir
-    end
-
-    def check_repo_dir
-      dir = File.join(@dir, 'repo')
       File.directory?(dir) || FileUtils.mkdir_p(dir)
       dir
     end
