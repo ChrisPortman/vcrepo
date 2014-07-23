@@ -151,6 +151,38 @@ module Vcrepo
       dir
     end
 
+    def create_log
+      log_dir  = Vcrepo.config['logdir'] || './logs'
+      log_file = File.join(log_dir, @name)
+
+      unless File.directory?(log_dir)
+        FileUtils.mkdir_p(log_dir)
+      end
+
+      if File.file?(log_file)
+        unless File.writable?(log_file)
+          begin 
+            File.chmod(0666, log_file)
+          rescue
+            (1..10).each do |i|
+              log_file = log_file + i.to_s
+              if File.file?(log_file)
+                break if File.writable?(log_file)
+              else
+                File.open(log_file, "w").close
+                File.chmod(0666, log_file)
+                break
+              end
+            end
+          end
+        end
+      else
+        File.open(log_file, "w").close
+        File.chmod(0666, log_file)
+      end
+      
+      Logger.new(log_file)
+    end
 
     def prepare_repo
       package_files = []

@@ -31,7 +31,7 @@ module Vcrepo
       @name     = name   or raise RuntimeError, "Repo must have a name"
       @source   = source or raise RuntimeError, "Repo must have a source"
       @type     = 'yum'
-      @logger   = Logger.new(File.join(Vcrepo.config['logdir'] || './logs', @name))
+      @logger   = create_log
 
       @dir      = check_dir
       @git_repo = Vcrepo::Git.new(@dir, @name)
