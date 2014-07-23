@@ -20,7 +20,7 @@ git clone http://git.pp.optusnet.com.au/isnd-linux/repo-manager.git /opt/repo-ma
 ```
 cd /opt/repo-manager && rackup -p 80 config.ru
 ```
-6. Browse to 'http://your.server/repos'.  It will be pretty bare as there are no repos defined.
+6. Browse to 'http://your.server'.  It will be pretty bare as there are no repos defined.
 
 From here, if you intend to sync RHN sources from channels other than your RHEL host is subscribed to, you will need to use a program from mrepo (gensystemid)
 TODO: Add more detail here....
@@ -41,7 +41,7 @@ repositories:
     source: 'http://yum.puppetlabs.com/el/6/products/x86_64/'
 ```
 
-The key for the repo, in this case 'shinyrepo_myos_osvers_myarch' can be whatever you like.  It will be what shows up in the list of repositories when you browse to /repos on your server.  The key/values inside the hash depend on the type of repository your creating.  In this case, its a yum (I havent implemented any other types yet) repository.  The source is where to get the packages from.
+The key for the repo, in this case 'shinyrepo_myos_osvers_myarch' can be whatever you like.  It will be what shows up in the list of repositories when you browse to / on your server.  The key/values inside the hash depend on the type of repository your creating.  In this case, its a yum (I havent implemented any other types yet) repository.  The source is where to get the packages from.
 
 Source can be a http web address (not https though for the time being, lftp seems to bomb out randomly with https), an rhn address for syncing from redhat or the work 'local'.
 
@@ -65,7 +65,7 @@ When the service starts up, it will check that 'repo_base_location' is a directo
 
 What happens when a sync runs, is it mirrors all the packages into '/repo_base_location/type/reponame/repo/'.  In the case of local repos, you have already done that so it doesnt have to mirror anything.  It then looks for any package files in repos/ that are not links, moves them to 'your_repo/.git/packages/' and then symlinks them back to 'your_repo/repo/'.  It then generates the repo metadata and adds and commits it to git with a commit comment being the date and time. The commit contains all the *links* but not the packages (I tried commiting the packages. Worked fine with ~10, not so much with 1000).  Over time the .git/.packages directory will accumulate all the packages that the repo has seen, however, a given commit will only have links to a subset.
 
-By default when you browse to /repos on your server, it will assume that you want to look at the HEAD of the master branch.  You can override this by browsing to /branch|tag|commit_id/repos/ and then into the desired repository.  You can also configure yum to use a url that include the branch, tag, or commit_id.
+By default when you browse to / on your server, it will assume that you want to look at the HEAD of the master branch.  You can override this by browsing to /rev/branch|tag|commit_id/ and then into the desired repository.  You can also configure yum to use a url that include the branch, tag, or commit_id.
 
 ### Package Cache
 All the packages that are synced into a repository are moved to the "package cache" and then symlinked back into the repository.  Its then the links that are version controlled in GIT rather than committing gigabytes of binary to the repo.
