@@ -1,8 +1,8 @@
 require 'fileutils'
 
-module Repositories
-  class Repo::Yum < Repositories::Repo
-    attr_reader :os, :name, :version, :arch, :source, :dir, :full_id
+module Vcrepo
+  class Repository::Yum < Vcrepo::Repository
+    attr_reader :name, :source, :dir
 
     def self.package_patterns
       [
@@ -31,10 +31,10 @@ module Repositories
       @name     = name   or raise RuntimeError, "Repo must have a name"
       @source   = source or raise RuntimeError, "Repo must have a source"
       @type     = 'yum'
-      @logger   = Logger.new(File.join(Repositories.config['logdir'] || './logs', @name))
+      @logger   = create_log
 
       @dir      = check_dir
-      @git_repo = check_git_repo
+      @git_repo = Vcrepo::Git.new(@dir, @name)
     end
 
     def sync_source
@@ -56,8 +56,8 @@ module Repositories
 
       gen_systemid()
 
-      rhnuser = Repositories.config['rhn_username'] or raise RepoError, "No RHN username ('rhn_username') configured"
-      rhnpass = Repositories.config['rhn_password'] or raise RepoError, "No RHN password ('rhn_password') configured"
+      rhnuser = Vcrepo.config['rhn_username'] or raise RepoError, "No RHN username ('rhn_username') configured"
+      rhnpass = Vcrepo.config['rhn_password'] or raise RepoError, "No RHN password ('rhn_password') configured"
 
       sync_cmd = "rhnget --username=#{rhnuser} --password=#{rhnpass} --systemid=#{ File.join(@git_repo.workdir, 'systemid') } -v #{ @source } #{ repo_dir }/"
       IO.popen(sync_cmd).each do |line|
@@ -74,8 +74,8 @@ module Repositories
         system('which gensystemid > /dev/null 2>&1') or
           raise RepoError, "Program, 'gensystemid' is not available in the path"
 
-        rhnuser = Repositories.config['rhn_username']
-        rhnpass = Repositories.config['rhn_password']
+        rhnuser = Vcrepo.config['rhn_username']
+        rhnpass = Vcrepo.config['rhn_password']
         system( "/usr/bin/gensystemid -u #{rhnuser} -p #{rhnpass} --release=#{@version}Server --arch=#{@arch} #{@git_repo.workdir}/" )
       end
     end

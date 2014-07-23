@@ -6,9 +6,9 @@ require 'rubygems'
 require 'sinatra/base'
 require 'json'
 
-require_relative './lib/repositories'
+require_relative './lib/vcrepo'
 
-class Repositories::App < Sinatra::Base
+class Vcrepo::App < Sinatra::Base
 
   # Before/After hooks
   before '/api/*' do
@@ -34,7 +34,7 @@ class Repositories::App < Sinatra::Base
     @path      = params[:splat].first
 
     begin
-      if @repo_name and repo = Repositories::Repo.repo(@repo_name)
+      if @repo_name and repo = Vcrepo::Repository.find(@repo_name)
         if @path.empty?
           contents = repo.contents(nil, @rev)
           dirs  = contents.select { |item| item[:type] == :tree }.collect { |tree| tree[:name].to_s }.sort
@@ -53,7 +53,7 @@ class Repositories::App < Sinatra::Base
           show_dir(dirs, files)
         end
       else
-        show_dir(Repositories::Repo.all.keys)
+        show_dir(Vcrepo::Repository.all.keys)
       end
     rescue RepoError => e
       [ e.status, e.message ].to_json
@@ -62,13 +62,13 @@ class Repositories::App < Sinatra::Base
 
   #API commands for managing the repos.
   get '/api/repos' do
-    Repositories::Repo.all.keys.to_json
+    Vcrepo::Repository.all.keys.to_json
   end
 
   get '/api/sync-repo' do
     params[:repo] or error 402, "Must supply a repo"
-    
-    if repo = Repositories::Repo.repo(params[:repo])
+
+    if repo = Vcrepo::Repository.find(params[:repo])
       begin
         repo.sync.to_json
       rescue RepoError => e
