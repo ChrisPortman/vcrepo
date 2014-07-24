@@ -1,6 +1,25 @@
+<%
+if @explicit_rev
+  base = "/rev/#{@rev}/"
+else
+  base = "/"
+end
+base = base + "#{@repo_name}/" if @repo_name
+
+if @repo_name
+  if @path.empty?
+    up_one = "#{base}"
+  else
+    up_one = "#{base}#{@path}"
+  end
+  up_one.sub!(/[^\/]+\/?$/,'')
+%>
+  <a href="<%= up_one %>">../</a><br />
+<% end %>
+
 <% @dirs.each do |val| %>
-<a href="/<%= @rev %>/repos/<%= @repo_name ? "#{@repo_name}/" : '' %><%= val %>/"><%= val.split('/').last %>/</a><br />
+  <a href="<%= base %><%= val %>/"><%= val.split('/').last %>/</a><br />
 <% end %>
 <% @files.each do |val| %>
-<a href="/<%= @rev %>/repos/<%= @repo_name ? "#{@repo_name}/" : '' %><%= val %>"><%= val.split('/').last %></a><br />
+  <a href="<%= base %><%= val %>"><%= val.split('/').last %></a><br />
 <% end %>
