@@ -27,7 +27,7 @@ module Vcrepo
     end
 
     Vcrepo.config['repositories'].each do |repo, settings|
-      Vcrepo::Repository.create(settings['type'], repo, settings['source'])
+      Vcrepo::Repository.create(repo, settings)
     end
   end
 end

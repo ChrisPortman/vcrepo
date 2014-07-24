@@ -27,11 +27,12 @@ module Vcrepo
       ]
     end
 
-    def initialize(name, source, version=nil, arch=nil)
+    def initialize(name, settings)
+      settings.is_a? Hash or raise RuntimeError, "Settings for create repo must be a Hash"
       @name     = name   or raise RuntimeError, "Repo must have a name"
-      @source   = source or raise RuntimeError, "Repo must have a source"
-      @version  = version
-      @arch     = arch
+      @source   = settings['source'] or raise RuntimeError, "Repo must have a source"
+      @version  = settings['version']
+      @arch     = settings['arch']
       @type     = 'yum'
       @logger   = create_log
 
@@ -73,6 +74,9 @@ module Vcrepo
     end
 
     def gen_systemid
+      @version or raise RuntimeError, "Repo #{name} has an RHN source.  It must specify a version"
+      @arch    or raise RuntimeError, "Repo #{name} has an RHN source.  It must specify a arch"
+
       unless File.file?(File.join(@git_repo.workdir, 'systemid'))
         system('which gensystemid > /dev/null 2>&1') or
           raise RepoError, "Program, 'gensystemid' is not available in the path"
