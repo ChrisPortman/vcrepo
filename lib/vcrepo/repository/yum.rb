@@ -27,9 +27,11 @@ module Vcrepo
       ]
     end
 
-    def initialize(name, source)
+    def initialize(name, source, version=nil, arch=nil)
       @name     = name   or raise RuntimeError, "Repo must have a name"
       @source   = source or raise RuntimeError, "Repo must have a source"
+      @version  = version
+      @arch     = arch
       @type     = 'yum'
       @logger   = create_log
 
