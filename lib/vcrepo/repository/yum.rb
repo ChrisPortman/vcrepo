@@ -27,12 +27,9 @@ module Vcrepo
       ]
     end
 
-    def initialize(name, settings)
-      settings.is_a? Hash or raise RuntimeError, "Settings for create repo must be a Hash"
-      @name     = name   or raise RuntimeError, "Repo must have a name"
-      @source   = settings['source'] or raise RuntimeError, "Repo must have a source"
-      @version  = settings['version']
-      @arch     = settings['arch']
+    def initialize(name, source)
+      @name     = name
+      @source   = source
       @type     = 'yum'
       @logger   = create_log
 
@@ -45,8 +42,10 @@ module Vcrepo
       case
         when source =~ /^http/
           http_sync()
-        when source =~ /^rhns/
-          rhns_sync()
+        when source =~ /^yum/
+          yum_sync()
+        when source =~ /^redhat_yum/
+          redhat_yum_sync()
         when source =~ /^local/
           local_sync()
         else
@@ -54,37 +53,70 @@ module Vcrepo
       end
     end
 
-    def rhns_sync
-      system('which rhnget > /dev/null 2>&1') or
-        raise RepoError, "Program, 'rhnget' is not available in the path"
+    def redhat_yum_sync
+      client_cert = Vcrepo.config['redhat_client_cert'] or
+        raise RepoError, "Syncing Redhat repos requires 'redhat_client_cert' config value"
+      client_key  = Vcrepo.config['redhat_client_key'] or
+        raise RepoError, "Syncing Redhat repos requires 'redhat_client_key' config value"
+      ca_cert     = Vcrepo.config['redhat_ca_cert'] or
+        raise RepoError, "Syncing Redhat repos requires 'redhat_ca_cert' config value"
 
-      gen_systemid()
+      yum_var_path  = '/etc/yum/vars/'
+      yum_var_files = {
+        'sslclientcert' => client_cert,
+        'sslclientkey'  => client_key,
+        'sslcacert'     => ca_cert,
+      }
 
-      rhnuser = Vcrepo.config['rhn_username'] or raise RepoError, "No RHN username ('rhn_username') configured"
-      rhnpass = Vcrepo.config['rhn_password'] or raise RepoError, "No RHN password ('rhn_password') configured"
+      yum_var_files.each do |key, val|
+        var_file = File.join(yum_var_path, key)
+        if File.file?( var_file )
+          File.readable?(var_file) or raise RepoError, "Cannot read #{var_file} to validate yum config"
+          content = File.open(var_file) { |io| io.read }.chomp
+          unless content == val
+            File.open(var_file, "w") { |io| io.write(val) }
+          end
+        else
+          if File.exists?( var_file )
+            raise RepoError, "Cannot set yum variable #{key}.  #{var_file} exists but is not a file."
+          end
 
-      sync_cmd = "rhnget --username=#{rhnuser} --password=#{rhnpass} --systemid=#{ File.join(@git_repo.workdir, 'systemid') } -v #{ @source } #{ repo_dir }/"
+          begin
+            File.open(var_file, "w") { |io| io.write(val) }
+          rescue Exception => e
+            raise RepoError, "Cannot set yum variable #{key}.  Could not open #{var_file} for write: #{e.message}"
+          end
+        end
+      end
+
+      yum_sync
+    end
+
+    def yum_sync
+      system('which reposync > /dev/null 2>&1') or
+        raise RepoError, "Program, 'reposync' is not available in the path"
+
+      yum_repo = @source.split('://').last
+
+      #reposync creates 'reponame/Packages' under the target dir and syncs there.
+      #pre-create this structure and link Packages back to /repo so that subsequent
+      #syncs dont start from scratch
+      unless File.directory?(File.join(repo_dir, yum_repo))
+        FileUtils.mkdir_p(File.join(repo_dir, yum_repo))
+      end
+      
+      unless File.symlink?(File.join(repo_dir, yum_repo, "Packages"))
+        File.symlink('../', File.join(repo_dir, yum_repo, "Packages"))
+      end
+
+      sync_cmd = "reposync -r #{yum_repo} -p #{repo_dir}"
       IO.popen(sync_cmd).each do |line|
-        @logger.info( line.chomp )
+        @logger.info( line.split("\n").first.chomp )
       end
     end
 
     def generate_repo
-      %x{createrepo -C --database --update #{repo_dir}}
-    end
-
-    def gen_systemid
-      @version or raise RuntimeError, "Repo #{name} has an RHN source.  It must specify a version"
-      @arch    or raise RuntimeError, "Repo #{name} has an RHN source.  It must specify a arch"
-
-      unless File.file?(File.join(@git_repo.workdir, 'systemid'))
-        system('which gensystemid > /dev/null 2>&1') or
-          raise RepoError, "Program, 'gensystemid' is not available in the path"
-
-        rhnuser = Vcrepo.config['rhn_username']
-        rhnpass = Vcrepo.config['rhn_password']
-        system( "/usr/bin/gensystemid -u #{rhnuser} -p #{rhnpass} --release=#{@version}Server --arch=#{@arch} #{@git_repo.workdir}/" )
-      end
+      %x{createrepo -C --database --update -x #{File.join(@source.split('://').last, '*')} #{repo_dir}}
     end
   end
 end

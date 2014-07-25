@@ -5,18 +5,14 @@ module Vcrepo
     @@repositories = {}
 
     ### Class Methods
-    def self.create(name, settings)
+    def self.create(name, source, type)
       unless @@repositories[name]
-        if type = settings['type']
-          case type
-            when 'yum'
-              @@repositories[name] = Vcrepo::Repository::Yum.new(name, settings)
-            when 'apt'
-              @@repositories[name] = Vcrepo::Repository::Apt.new(name, settings)
-            else
-          end
-        else
-          raise ArgumentError, "Type for repo #{name} must be suplied"
+        case type
+          when 'yum'
+            @@repositories[name] = Vcrepo::Repository::Yum.new(name, source)
+          when 'apt'
+            @@repositories[name] = Vcrepo::Repository::Apt.new(name, source)
+          else
         end
       end
     end

@@ -1,0 +1,949 @@
+[rhel-6-server-rhn-tools-beta-source-rpms]
+name = RHN Tools for Red Hat Enterprise Linux 6 Server Beta (Source RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/rhn-tools/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-sam-source-rpms]
+name = Red Hat Subscription Asset Manager (for RHEL 6 Server) (Source RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/subscription-asset-manager/1/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-rhs-client-1-source-rpms]
+name = Red Hat Storage Native Client for RHEL 6 (Source RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/rhs-client/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-rhev-agent-beta-debug-rpms]
+name = Red Hat Enterprise Virtualization Agents for RHEL 6 Server Beta (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/rhev-agent/3/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-thirdparty-oracle-java-beta-source-rpms]
+name = Red Hat Enterprise Linux 6 Server - Oracle Java Beta (Source RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/oracle-java/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-rpms]
+name = Red Hat Enterprise Linux 6 Server (RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-cf-tools-1-beta-rpms]
+name = Red Hat CloudForms Tools for RHEL 6 Beta (RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/cf-tools/1/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-sam-rpms]
+name = Red Hat Subscription Asset Manager (for RHEL 6 Server) (RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/subscription-asset-manager/1/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-source-rpms]
+name = Red Hat Enterprise Linux 6 Server (Source RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-v2vwin-1-rpms]
+name = Red Hat Virt V2V Tool for RHEL 6 (RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/v2vwin/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-supplementary-beta-source-rpms]
+name = Red Hat Enterprise Linux 6 Server - Supplementary Beta (Source RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/supplementary/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-server-dts-6-rhb-source-rpms]
+name = Red Hat Developer Toolset RHB Source RPMs for Red Hat Enterprise Linux 6 Server
+baseurl = https://cdn.redhat.com/content/rhb/rhel/server/6/6Server/x86_64/devtoolset/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = basearch
+
+[rhel-6-server-fastrack-rpms]
+name = Red Hat Enterprise Linux 6 Server - Fastrack (RPMs)
+baseurl = https://cdn.redhat.com/content/fastrack/rhel/server/6/x86_64/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = basearch
+
+[rhel-6-server-optional-debug-rpms]
+name = Red Hat Enterprise Linux 6 Server - Optional (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/optional/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-optional-fastrack-rpms]
+name = Red Hat Enterprise Linux 6 Server - Optional Fastrack (RPMs)
+baseurl = https://cdn.redhat.com/content/fastrack/rhel/server/6/x86_64/optional/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = basearch
+
+[rhel-server-rhscl-6-beta-debug-rpms]
+name = Red Hat Software Collections Beta Debug RPMs for Red Hat Enterprise Linux 6 Server
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/rhscl/1/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-cf-tools-1-debug-rpms]
+name = Red Hat CloudForms Tools for RHEL 6 (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/cf-tools/1/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-debug-rpms]
+name = Red Hat Enterprise Linux 6 Server (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-rhev-agent-source-rpms]
+name = Red Hat Enterprise Virtualization Agents for RHEL 6 Server (Source RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/rhev-agent/3/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-rh-common-debug-rpms]
+name = Red Hat Enterprise Linux 6 Server - RH Common (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/rh-common/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-optional-fastrack-debug-rpms]
+name = Red Hat Enterprise Linux 6 Server - Optional Fastrack (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/fastrack/rhel/server/6/x86_64/optional/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = basearch
+
+[rhel-6-server-extras-debuginfo]
+name = Red Hat Enterprise Linux 6 Server - Extras (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/extras/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = basearch
+
+[rhel-server-rhscl-6-beta-rpms]
+name = Red Hat Software Collections Beta RPMs for Red Hat Enterprise Linux 6 Server
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/rhscl/1/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-cf-tools-1-source-rpms]
+name = Red Hat CloudForms Tools for RHEL 6 (Source RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/cf-tools/1/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-server-dts-6-rhb-debug-rpms]
+name = Red Hat Developer Toolset RHB Debug RPMs for Red Hat Enterprise Linux 6 Server
+baseurl = https://cdn.redhat.com/content/rhb/rhel/server/6/6Server/x86_64/devtoolset/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = basearch
+
+[rhel-server-rhscl-6-beta-source-rpms]
+name = Red Hat Software Collections Beta Source RPMs for Red Hat Enterprise Linux 6 Server
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/rhscl/1/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-sam-beta-debug-rpms]
+name = Red Hat Subscription Asset Manager (for RHEL 6 Server) Beta (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/subscription-asset-manager/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-rhn-tools-debug-rpms]
+name = RHN Tools for Red Hat Enterprise Linux 6 Server (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/rhn-tools/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-extras-source-rpms]
+name = Red Hat Enterprise Linux 6 Server - Extras (Source RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/extras/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = basearch
+
+[rhel-6-server-sam-debug-rpms]
+name = Red Hat Subscription Asset Manager (for RHEL 6 Server) (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/subscription-asset-manager/1/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-rhs-client-1-rpms]
+name = Red Hat Storage Native Client for RHEL 6 (RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/rhs-client/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-supplementary-beta-rpms]
+name = Red Hat Enterprise Linux 6 Server - Supplementary Beta (RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/supplementary/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-optional-beta-source-rpms]
+name = Red Hat Enterprise Linux 6 Server - Optional Beta (Source RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/optional/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-extras-rpms]
+name = Red Hat Enterprise Linux 6 Server - Extras (RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/extras/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = basearch
+
+[rhel-6-server-supplementary-source-rpms]
+name = Red Hat Enterprise Linux 6 Server - Supplementary (Source RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/supplementary/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-rhev-agent-beta-rpms]
+name = Red Hat Enterprise Virtualization Agents for RHEL 6 Server Beta (RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/rhev-agent/3/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-supplementary-beta-debuginfo]
+name = Red Hat Enterprise Linux 6 Server - Supplementary Beta (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/supplementary/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-rhn-tools-beta-rpms]
+name = RHN Tools for Red Hat Enterprise Linux 6 Server Beta (RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/rhn-tools/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-server-dts-6-rhb-rpms]
+name = Red Hat Developer Toolset RHB RPMs for Red Hat Enterprise Linux 6 Server
+baseurl = https://cdn.redhat.com/content/rhb/rhel/server/6/6Server/x86_64/devtoolset/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = basearch
+
+[rhel-6-server-rhs-client-1-debug-rpms]
+name = Red Hat Storage Native Client for RHEL 6 (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/rhs-client/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-optional-source-rpms]
+name = Red Hat Enterprise Linux 6 Server - Optional (Source RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/optional/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-optional-beta-rpms]
+name = Red Hat Enterprise Linux 6 Server - Optional Beta (RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/optional/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-beta-rpms]
+name = Red Hat Enterprise Linux 6 Server Beta (RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-optional-beta-debug-rpms]
+name = Red Hat Enterprise Linux 6 Server - Optional Beta (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/optional/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-fastrack-debug-rpms]
+name = Red Hat Enterprise Linux 6 Server - Fastrack (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/fastrack/rhel/server/6/x86_64/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = basearch
+
+[rhel-6-server-thirdparty-oracle-java-source-rpms]
+name = Red Hat Enterprise Linux 6 Server - Oracle Java (Source RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/oracle-java/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-rhev-agent-beta-source-rpms]
+name = Red Hat Enterprise Virtualization Agents for RHEL 6 Server Beta (Source RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/rhev-agent/3/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-optional-rpms]
+name = Red Hat Enterprise Linux 6 Server - Optional (RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/optional/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-v2vwin-1-source-rpms]
+name = Red Hat Virt V2V Tool for RHEL 6 (Source RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/v2vwin/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-cf-tools-1-beta-debug-rpms]
+name = Red Hat CloudForms Tools for RHEL 6 Beta (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/cf-tools/1/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-thirdparty-oracle-java-rpms]
+name = Red Hat Enterprise Linux 6 Server - Oracle Java (RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/oracle-java/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-rh-common-beta-source-rpms]
+name = Red Hat Enterprise Linux 6 Server - RH Common Beta (Source RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/rh-common/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = basearch
+
+[rhel-6-server-rh-common-beta-debug-rpms]
+name = Red Hat Enterprise Linux 6 Server - RH Common Beta (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/rh-common/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = basearch
+
+[rhel-6-server-beta-source-rpms]
+name = Red Hat Enterprise Linux 6 Server Beta (Source RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-beta-debug-rpms]
+name = Red Hat Enterprise Linux 6 Server Beta (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-sam-beta-rpms]
+name = Red Hat Subscription Asset Manager (for RHEL 6 Server) Beta (RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/subscription-asset-manager/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-rh-common-beta-rpms]
+name = Red Hat Enterprise Linux 6 Server - RH Common Beta (RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/rh-common/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = basearch
+
+[rhel-6-server-thirdparty-oracle-java-beta-rpms]
+name = Red Hat Enterprise Linux 6 Server - Oracle Java Beta (RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/oracle-java/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-rhn-tools-source-rpms]
+name = RHN Tools for Red Hat Enterprise Linux 6 Server (Source RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/rhn-tools/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-rhev-agent-debug-rpms]
+name = Red Hat Enterprise Virtualization Agents for RHEL 6 Server (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/rhev-agent/3/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-supplementary-debuginfo]
+name = Red Hat Enterprise Linux 6 Server - Supplementary (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/supplementary/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-fastrack-source-rpms]
+name = Red Hat Enterprise Linux 6 Server - Fastrack (Source RPMs)
+baseurl = https://cdn.redhat.com/content/fastrack/rhel/server/6/x86_64/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = basearch
+
+[rhel-6-server-cf-tools-1-rpms]
+name = Red Hat CloudForms Tools for RHEL 6 (RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/cf-tools/1/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-sam-beta-source-rpms]
+name = Red Hat Subscription Asset Manager (for RHEL 6 Server) Beta (Source RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/subscription-asset-manager/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-rhn-tools-rpms]
+name = RHN Tools for Red Hat Enterprise Linux 6 Server (RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/rhn-tools/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-supplementary-rpms]
+name = Red Hat Enterprise Linux 6 Server - Supplementary (RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/supplementary/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-rh-common-rpms]
+name = Red Hat Enterprise Linux 6 Server - RH Common (RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/rh-common/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-v2vwin-1-debug-rpms]
+name = Red Hat Virt V2V Tool for RHEL 6 (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/v2vwin/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-rh-common-source-rpms]
+name = Red Hat Enterprise Linux 6 Server - RH Common (Source RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/rh-common/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-rhn-tools-beta-debug-rpms]
+name = RHN Tools for Red Hat Enterprise Linux 6 Server Beta (Debug RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/rhn-tools/debug
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-rhev-agent-rpms]
+name = Red Hat Enterprise Virtualization Agents for RHEL 6 Server (RPMs)
+baseurl = https://cdn.redhat.com/content/dist/rhel/server/6/6Server/x86_64/rhev-agent/3/os
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-cf-tools-1-beta-source-rpms]
+name = Red Hat CloudForms Tools for RHEL 6 Beta (Source RPMs)
+baseurl = https://cdn.redhat.com/content/beta/rhel/server/6/6Server/x86_64/cf-tools/1/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release,file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-beta
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = releasever basearch
+
+[rhel-6-server-optional-fastrack-source-rpms]
+name = Red Hat Enterprise Linux 6 Server - Optional Fastrack (Source RPMs)
+baseurl = https://cdn.redhat.com/content/fastrack/rhel/server/6/x86_64/optional/source/SRPMS
+enabled = 0
+gpgcheck = 1
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+sslverify = 1
+sslcacert = $sslcacert
+sslclientkey = $sslclientkey
+sslclientcert = $sslclientcert
+metadata_expire = 86400
+ui_repoid_vars = basearch
+
