@@ -58,6 +58,29 @@ This will initiate a repo sync.  It wont wait for it to finish though, it could 
 
 When its finished, browse to /repos/ and click on your repo.  You should see packages and a repodata folder.  You can now use 'http://your.server/repos/your_repo' in a yum config to give you machine access to the repo.
 
+#### Syncing Redhat Repos
+Ahhh redhat and their locked down stuff.
+
+You'll need to be running on a RHEL system and have that system subscribed to Redhat
+
+```
+[root@host]# subscription-manager register --username=rhuser --password=rhpass
+```
+
+Then add a Redhat Enterprise Linux entitlement to the system through their customer portal (or I believe you can do it using the subscription-manager tool).
+
+Then in the samples directory, there are 2 .repo files for rhel6 and rhel7.  Copy either or both to /etc/yum.repos.d/.  These files contain all the repositories for the relevant versions of RHEL configured in a disabled state.  This means that yum (and thus, the reposync tool) will know about them, but wont try to install packages using them.
+
+Lastly, when you subscribed the machine, it would have created client certs in /etc/pki./entitlement/.  Refer to config.yaml.sample and add the Redhat options to your config.yaml.
+
+Now you can define Redhat RHEL repos.  Doing so is the same as the other types except your source will look like:
+
+```
+redhat_yum://repo-name
+```
+
+where repo-name is the name of the repo as defined in the rhel6/7.repo files in /etc/yum.repos.d/
+
 ### All the GIT Stuff
 Once you've got to the point you've synced a repo and machines can use it, you can start managing your repository a bit more.
 
