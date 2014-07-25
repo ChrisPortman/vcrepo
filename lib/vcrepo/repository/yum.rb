@@ -2,7 +2,7 @@ require 'fileutils'
 
 module Vcrepo
   class Repository::Yum < Vcrepo::Repository
-    attr_reader :name, :source, :dir
+    attr_reader :name, :source, :type, :dir, :enabled
 
     def self.package_patterns
       [
@@ -32,10 +32,13 @@ module Vcrepo
       @source   = source
       @type     = 'yum'
       @logger   = create_log
+      @enabled  = false
 
-      @dir      = check_dir
-      @git_repo = Vcrepo::Git.new(@dir, @name)
-      repo_dir
+      if @dir = check_dir
+        @git_repo = Vcrepo::Git.new(@dir, @name)
+        repo_dir
+        @enabled = true
+      end
     end
 
     def sync_source

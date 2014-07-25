@@ -48,7 +48,7 @@ class Vcrepo::App < Sinatra::Base
             [ 404, "No such repository" ]
           end
         else
-          show_dir(Vcrepo::Repository.all.keys.sort)
+          show_dir(Vcrepo::Repository.all_enabled.keys.sort)
         end
       rescue RepoError => e
         [ e.status, e.message ].to_json
@@ -66,7 +66,6 @@ class Vcrepo::App < Sinatra::Base
   end
 
   get '/?:repo?/?*' do
-    puts "No revision"
     @rev       = Vcrepo.config['default_revision'] ||'master'
     @repo_name = params[:repo]
     @path      = params[:splat].first

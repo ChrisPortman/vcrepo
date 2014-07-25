@@ -6,19 +6,26 @@ module Vcrepo
 
     ### Class Methods
     def self.create(name, source, type)
-      unless @@repositories[name]
-        case type
-          when 'yum'
-            @@repositories[name] = Vcrepo::Repository::Yum.new(name, source)
-          when 'apt'
-            @@repositories[name] = Vcrepo::Repository::Apt.new(name, source)
-          else
-        end
+      case type
+        when 'yum'
+          @@repositories[name] = Vcrepo::Repository::Yum.new(name, source)
+        when 'apt'
+          @@repositories[name] = Vcrepo::Repository::Apt.new(name, source)
+        else
       end
     end
 
     def self.all
       @@repositories
+    end
+
+    def self.all_enabled
+      #Check the disabled ones
+      @@repositories.select{ |key,val| !val.enabled }.each do |name, repo|
+        create(repo.name, repo.source, repo.type)
+      end
+      
+      @@repositories.select{ |key,val| val.enabled }
     end
 
     def self.find(name)
@@ -122,7 +129,13 @@ module Vcrepo
     def check_dir
       base = Vcrepo.config['repo_base_location']
       dir  = File.join(base, @type, @name)
-      File.directory?(dir) || FileUtils.mkdir_p(dir)
+
+      begin
+        File.directory?(dir) || FileUtils.mkdir_p(dir)
+      rescue
+        return nil
+      end
+
       dir
     end
 
@@ -152,7 +165,7 @@ module Vcrepo
 
       if File.file?(log_file)
         unless File.writable?(log_file)
-          begin 
+          begin
             File.chmod(0666, log_file)
           rescue
             (1..10).each do |i|
@@ -171,7 +184,7 @@ module Vcrepo
         File.open(log_file, "w").close
         File.chmod(0666, log_file)
       end
-      
+
       Logger.new(log_file)
     end
 
