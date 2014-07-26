@@ -72,6 +72,23 @@ This will initiate a repo sync.  It wont wait for it to finish though, it could 
 
 When its finished, browse to /repos/ and click on your repo.  You should see packages and a repodata folder.  You can now use 'http://your.server/repos/your_repo' in a yum config to give you machine access to the repo.
 
+#### Syncing Local Repos
+Local repos are maintained by manually placing packages into the repository and then running a sync against them.  Typically the process will look like this:
+
+```
+[user@server ~/]# cd /repo_base/yum/my_local_repo
+[user@server my_local_repo]# git reset --hard master
+[user@server my_local_repo]# cd repo/
+[user@server repo]# wget http://some.server/package1.yum
+[user@server repo]# wget http://some.server/package2.yum
+...
+[user@server repo]# wget http://some.server/packageN.yum
+[user@server repo]# cd /opt/vcrepo/
+[user@server vcrepo]# ruby bin/sync-repo.rb my_local_repo
+```
+
+What happens is we change dir into the local repo's directory, make sure that the GIT work dir is on master:HEAD (99% of the time it will be already, but doesnt hurt to make sure), we get the new packages into the repo/ dir and then run the sync process.  Done.
+
 #### Syncing Redhat Repos
 Ahhh redhat and their locked down stuff.
 
@@ -115,3 +132,4 @@ Basically the idea is to cron the syncing of the repos nightly.  Then there will
 
 ## TODO
   * Fix up managing filesystem permissions so that the web ui can reliably work with what is created/manipulated by the CLI scripts.
+  * Make sure that the sync-repo.rb script can be run relative to anywhere and not just on the vcrepo directory.
