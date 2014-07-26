@@ -43,7 +43,21 @@ repositories:
 
 The key for the repo, in this case 'shinyrepo_myos_osvers_myarch' can be whatever you like.  It will be what shows up in the list of repositories when you browse to / on your server.  The key/values inside the hash depend on the type of repository your creating.  In this case, its a yum (I havent implemented any other types yet) repository.  The source is where to get the packages from.
 
-Source can be a http web address (not https though for the time being, lftp seems to bomb out randomly with https), an rhn address for syncing from redhat or the work 'local'.
+Valid source configs look like:
+
+```
+# Sync local packages.  Put the packages straight into the <repo_base_location>/<type>/repo_name/repo/ and run a sync.
+source: local
+
+# Sync packages from an HTTP location that has indexes enabled.
+source: http://some.remote.server/package/dir/
+
+# Sync from a public YUM repository that is defined in /etc/yum.repos.d/ (does not need to be enabled)
+source: yum://yum_repos_d_config_name
+
+# Sync from redhat protected repositories e.g, RHEL Server (see more below), that is defined in /etc/yum.repos.d/ (does not need to be enabled)
+source: redhat_yum://yum_repos_d_config_name
+```
 
 ### Syncing Repos
 Once the repos have been defined, you need to sync them.  Change dir to the repo-manager root (where you cloned to) and run:
