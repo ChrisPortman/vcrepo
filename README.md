@@ -1,6 +1,9 @@
 # Repo Manager
 
 ## Introduction
+
+**This is alpha software that has limited testing and has yet to be deployed in a production environment**
+
 This software allows for the creation of package repositories either by syncing them from upsream repositories or by generating them from local packages.  The repositories are maintained under GIT control so that you can arbitrarily revert to previous snapshots using standard GIT workflows.
 
 ## Installation
@@ -100,6 +103,4 @@ Basically the idea is to cron the syncing of the repos nightly.  Then there will
 
 
 ## TODO
-  * Look at simplifying the repos filesystem structure.  I dont think it really needs to be repo_base_location/os/vers/arch.  It can more likely be repo_base_location/{yum|apt}/repo_name - DONE
-  * Make sure that if someone has been mucking about in the workdir and not left it master:HEAD that the syncs dont loose the plot. - DONE
-  * Move the .package dir out of .git. It shouldnt really live there, but on the other hand, its an easy way to make sure its out of the way of the commits. - DONE
+  * Fix up managing filesystem permissions so that the web ui can reliably work with what is created/manipulated by the CLI scripts.
