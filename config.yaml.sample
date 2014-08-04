@@ -5,6 +5,9 @@
   redhat_client_key: "/etc/pki/entitlement/4287868431718348223-key.pem"
   redhat_ca_cert: "/etc/rhsm/ca/redhat-uep.pem"
 
+  user: apache
+  group: apache
+
   repo_base_location: '/tmp/repos/'
 
   repositories:

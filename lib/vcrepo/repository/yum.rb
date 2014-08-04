@@ -2,7 +2,7 @@ require 'fileutils'
 
 module Vcrepo
   class Repository::Yum < Vcrepo::Repository
-    attr_reader :name, :source, :type, :dir, :enabled
+    attr_reader :name, :source, :type, :dir, :enabled, :git_repo
 
     def self.package_patterns
       [

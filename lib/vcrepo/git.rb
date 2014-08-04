@@ -2,6 +2,8 @@ require 'rugged'
 
 module Vcrepo
   class Git
+    attr_reader :repo
+
     def initialize(dir, package_repo)
       @real_workdir = dir
       @repo         = open_or_create()
@@ -88,6 +90,36 @@ module Vcrepo
         )
       end
     end
+    
+    def branch_commits(branch='master')
+      if br = @repo.branches[branch]
+        @repo.walk(br.target_id)
+      else
+        []
+      end
+    end
+    
+    def tags
+      @repo.tags
+    end
+    
+    def lookup_tag(tag)
+      @repo.tags[tag]
+    end
+
+    def lookup_commit(oid)
+      if obj = @repo.lookup(oid)
+        obj.type == :commit ? obj : nil
+      end
+    end
+    
+    def branches
+      @repo.branches
+    end
+
+    def lookup_branch(branch='master')
+      @repo.branches[branch]
+    end
 
     private
 
@@ -142,11 +174,9 @@ module Vcrepo
       if release.length == 40 and object = @repo.lookup(release)
         return object if object.type == :commit
 
-      elsif tag = @repo.references["refs/tags/#{release}"]
+      elsif tag = @repo.tags[release]
         case
-          when tag.target_type == :commit
-            tag
-          when tag.target_type == :tag
+          when tag.target.type == :commit
             tag.target
           else
             raise RepoError, "No such revision: #{release}"
@@ -164,6 +194,7 @@ module Vcrepo
       path   = name.split('/')
       leaf   = path.pop
       if commit = find_commit(release)
+        
         tree = commit.tree
         path.each do |p|
           tree.each_tree do |t|

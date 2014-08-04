@@ -147,8 +147,21 @@ module Vcrepo
       dir
     end
 
-    def package_cache_dir
-      dir = File.join(Vcrepo.config['repo_base_location'], 'package_cache')
+    def package_cache_dir(package=nil)
+      index_path = nil
+      extension  = nil
+      
+      if package
+        extension  = File.extname(package).sub(/^\./, '')
+        filebase   = File.basename(package)  
+        index_path = Vcrepo.config.package_indexing_patterns.collect do |i|
+          if index = filebase.match(/^#{i}/)
+            index[0]
+          end
+        end.compact.first
+      end      
+
+      dir = File.join([Vcrepo.config['repo_base_location'], 'package_cache', extension, index_path].compact)
       unless File.directory?(dir)
         FileUtils.mkdir_p(dir)
       end
@@ -202,7 +215,7 @@ module Vcrepo
     end
 
     def link_package(file)
-      packages_dir = package_cache_dir()
+      packages_dir = package_cache_dir(file)
 
       newfile = File.join(packages_dir, File.basename(file))
       File.exists?(newfile) ? FileUtils.rm(file) : FileUtils.mv(file, newfile)

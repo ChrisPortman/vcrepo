@@ -14,6 +14,15 @@ module Vcrepo
       end
     end
 
+    def package_indexing_patterns
+      defaults = [
+        '[a-zA-Z0-9]{1,2}',
+        'libs?-?[a-zA-Z0-9]{1,2}',
+      ]
+      
+      Vcrepo.config['package_indexing_patterns'] || defaults
+    end
+
     def [](key)
       @config[key]
     end
