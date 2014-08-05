@@ -16,12 +16,12 @@ The Repo Manager is a ruby sinatra app.  It requires ruby >= 1.9.3 (due to the r
   * rack
 3. Clone the source
 ```
-git clone http://git.pp.optusnet.com.au/isnd-linux/repo-manager.git /opt/repo-manager
+git clone http://git.pp.optusnet.com.au/isnd-linux/vcrepo.git /opt/vcrepo
 ```
-4. Open the /opt/repo-manager/config.yaml file and update the `repo_base_location` to as appropriate.
+4. Open the /opt/vcrepo/config.yaml file and update the `repo_base_location` to as appropriate.
 5. From here you should be able to run with rackup:
 ```
-cd /opt/repo-manager && rackup -p 80 config.ru
+cd /opt/vcrepo && rackup -p 80 config.ru
 ```
 6. Browse to 'http://your.server'.  It will be pretty bare as there are no repos defined.
 
@@ -59,18 +59,60 @@ source: yum://yum_repos_d_config_name
 source: redhat_yum://yum_repos_d_config_name
 ```
 
-### Syncing Repos
-Once the repos have been defined, you need to sync them.  Change dir to the repo-manager root (where you cloned to) and run:
-```
-bin/sync-repo
-```
-without any arguments as above, it will print a list of defined repos.  Then:
-```
-bin/sync-repo my-repo
-```
-This will initiate a repo sync.  It wont wait for it to finish though, it could take ages.  It will tell you that you can follow it with a provided tail command.
+### The Client
+Vcrepo comes with a CLI client in the client directory of the source you just cloned.
 
-When its finished, browse to /repos/ and click on your repo.  You should see packages and a repodata folder.  You can now use 'http://your.server/repos/your_repo' in a yum config to give you machine access to the repo.
+```
+[user@server repo]# cd /opt/vcrepo/client/bin
+```
+
+The client is basically just an interface to the server APIs.  Running the script without any arguments will produce help and a list of commands available:
+
+```
+[user@server bin]# ruby vcrepo.rb
+Usage:
+  vcrepo [OPTIONS] <command> [option [, option] ]
+  vcrepo [OPTIONS] <command> help
+  vcrepo [OPTIONS] help
+
+Options:
+  -h | --host : The server hosting the repos server (Default: localhost)
+
+Valid commands:
+  commit_list
+  commit_tag
+  repo_list
+  repo_sync
+  tag_delete
+  tag_list
+```
+
+Running the script with a command followed by 'help' will tell you how to use that command:
+
+```
+[user@server bin]# ruby vcrepo.rb commit_tag help
+Usage:
+vcrepo.rb commit_tag <reponame> <commit_id> <tag_name>
+```
+
+### Syncing Repos
+Once the repos have been defined, you need to sync them.  Using the CLI tool:
+```
+[user@server repo]# cd /opt/vcrepo/client/bin
+[user@server repo]# ruby vcrepo.rb repo_list
+---
+- rhel6-x86_64-puppet_products
+- rhel6-x86_64-gitlab
+- rhel6-x86_64-updates
+- rhel7-x86_64-updates
+[user@server repo]# ruby vcrepo.rb repo_sync rhel6-x86_64-puppet_products
+---
+- Sync of rhel6-x86_64-puppet_products has been started.
+```
+
+This will initiate a repo sync.  It wont wait for it to finish though, it could take ages.  You can watch it grind away by tailing the log file for the repo, which by default is in /source_dir/logs/repo-name.log.
+
+When its finished, browse to / on your server and click on your repo.  You should see packages and a repodata folder.  You can now use 'http://your.server/your_repo' in a yum config to give you machine access to the repo.
 
 #### Syncing Local Repos
 Local repos are maintained by manually placing packages into the repository and then running a sync against them.  Typically the process will look like this:
@@ -83,8 +125,8 @@ Local repos are maintained by manually placing packages into the repository and 
 [user@server repo]# wget http://some.server/package2.yum
 ...
 [user@server repo]# wget http://some.server/packageN.yum
-[user@server repo]# cd /opt/vcrepo/
-[user@server vcrepo]# ruby bin/sync-repo.rb my_local_repo
+[user@server repo]# cd /opt/vcrepo/client/bin
+[user@server bin]# ruby vcrepo.rb repo_sync my_local_repo
 ```
 
 What happens is we change dir into the local repo's directory, make sure that the GIT work dir is on master:HEAD (99% of the time it will be already, but doesnt hurt to make sure), we get the new packages into the repo/ dir and then run the sync process.  Done.
@@ -112,6 +154,9 @@ redhat_yum://repo-name
 
 where repo-name is the name of the repo as defined in the rhel6/7.repo files in /etc/yum.repos.d/
 
+### API
+There is some documentation for the API in the [API Doc](docs/api.md)
+
 ### All the GIT Stuff
 Once you've got to the point you've synced a repo and machines can use it, you can start managing your repository a bit more.
 
@@ -128,8 +173,3 @@ The package cache is at /repo_base_dir/package_cache/.  All the packages get lum
 
 ### Intended Workflow
 Basically the idea is to cron the syncing of the repos nightly.  Then there will be a nightly commit of in the GIT repo.  We will then be able to tag a specific commit as 'production', 'dev' whatever.  When we want to make new packages available to and environment, just move the tag and done.
-
-
-## TODO
-  * Fix up managing filesystem permissions so that the web ui can reliably work with what is created/manipulated by the CLI scripts.
-  * Make sure that the sync-repo.rb script can be run relative to anywhere and not just on the vcrepo directory.
