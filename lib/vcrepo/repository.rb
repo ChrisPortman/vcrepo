@@ -30,7 +30,7 @@ module Vcrepo
 
     def self.find(name)
       ret = nil
-      @@repositories.each do |n,repo|
+      self.all.each do |n,repo|
         if name == n
           ret = repo
         end
@@ -39,7 +39,7 @@ module Vcrepo
     end
 
     def self.sync_all
-      @repositories.each do |name, repo|
+      self.all.each.each do |name, repo|
         repo.sync
       end
     end
@@ -50,53 +50,58 @@ module Vcrepo
       end
 
       pid = fork do
-        @logger.info('Starting Sync')
+        execute_sync
+      end
+      Process.detach(pid)
+      
+      [ 200, "Sync of #{@name} has been started." ]
+    end
 
-        lock
-
-        #For non local sources, we will create a temporary working dir to sync to.  This avoids complications
-        #when someone has been messing about in the regular workdir (playing with tags or branching or something)
-        #For locally sourced repos though, its expected that the admin knows what theyre doing.
-        if source =~ /^local/
-          #This should make the repo look like the last commit on Master without clobering any manual adds since (we want to add those)
-          @git_repo.safe_checkout("master")
+    def execute_sync
+      @logger.info('Starting Sync')
+  
+      lock
+  
+      #For non local sources, we will create a temporary working dir to sync to.  This avoids complications
+      #when someone has been messing about in the regular workdir (playing with tags or branching or something)
+      #For locally sourced repos though, its expected that the admin knows what theyre doing.
+      if source =~ /^local/
+        #This should make the repo look like the last commit on Master without clobering any manual adds since (we want to add those)
+        @git_repo.safe_checkout("master")
+        prepare_repo()
+        @git_repo.commit
+        @logger.info('Sync complete')
+      else
+        tmp_work_dir = File.join(Vcrepo.config['repo_base_location'], ".#{@name}-#{Time.new.to_i}")
+  
+        #create and use a temporary work dir so manual stuff in the normal work dir doesnt get in the way
+        unless File.directory?(tmp_work_dir)
+          FileUtils.mkdir_p(tmp_work_dir)
+        end
+  
+        #Check the master branch out to the temp work dir.
+        @git_repo.hard_checkout("master", tmp_work_dir)
+  
+        #Run the sync source method which is defined in the repositories type class
+        begin
+          sync_source()
+        rescue RepoError => e
+          @logger.error("Sync of repository #{@name} failed: #{e.message}")
+        else
+          #Move the packages to the cache and generate metadata then commit
           prepare_repo()
           @git_repo.commit
           @logger.info('Sync complete')
-        else
-          tmp_work_dir = File.join(Vcrepo.config['repo_base_location'], ".#{@name}-#{Time.new.to_i}")
-
-          #create and use a temporary work dir so manual stuff in the normal work dir doesnt get in the way
-          unless File.directory?(tmp_work_dir)
-            FileUtils.mkdir_p(tmp_work_dir)
-          end
-
-          #Check the master branch out to the temp work dir.
-          @git_repo.hard_checkout("master", tmp_work_dir)
-
-          #Run the sync source method which is defined in the repositories type class
-          begin
-            sync_source()
-          rescue RepoError => e
-            @logger.error("Sync of repository #{@name} failed: #{e.message}")
-          else
-            #Move the packages to the cache and generate metadata then commit
-            prepare_repo()
-            @git_repo.commit
-            @logger.info('Sync complete')
-          end
-
-          #remove the temporary work dir
-          FileUtils.rm_rf(tmp_work_dir) if tmp_work_dir
         end
-
-        #Set the workdir of the GIT repo back to the real one
-        @git_repo.reset_workdir
-
-        unlock
+  
+        #remove the temporary work dir
+        FileUtils.rm_rf(tmp_work_dir) if tmp_work_dir
       end
-      Process.detach(pid)
-      [ 200, "Sync of #{@name} has been started." ]
+  
+      #Set the workdir of the GIT repo back to the real one
+      @git_repo.reset_workdir
+  
+      unlock    
     end
 
     def http_sync
@@ -208,18 +213,18 @@ module Vcrepo
       end
 
       package_files.flatten.each do |file|
+        @logger.info("Linking file #{file}")
         link_package(file)
       end
-
-      generate_repo
     end
 
     def link_package(file)
       packages_dir = package_cache_dir(file)
 
       newfile = File.join(packages_dir, File.basename(file))
+      @logger.info("  From #{newfile}")
       File.exists?(newfile) ? FileUtils.rm(file) : FileUtils.mv(file, newfile)
-
+      
       FileUtils.ln_s(newfile, file)
     end
 

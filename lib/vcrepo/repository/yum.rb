@@ -54,6 +54,7 @@ module Vcrepo
         else
           raise RepoError, "Unrecognised source type: #{source}"
       end
+      generate_repo
     end
 
     def redhat_yum_sync
@@ -101,17 +102,6 @@ module Vcrepo
 
       yum_repo = @source.split('://').last
 
-      #reposync creates 'reponame/Packages' under the target dir and syncs there.
-      #pre-create this structure and link Packages back to /repo so that subsequent
-      #syncs dont start from scratch
-      unless File.directory?(File.join(repo_dir, yum_repo))
-        FileUtils.mkdir_p(File.join(repo_dir, yum_repo))
-      end
-      
-      unless File.symlink?(File.join(repo_dir, yum_repo, "Packages"))
-        File.symlink('../', File.join(repo_dir, yum_repo, "Packages"))
-      end
-
       sync_cmd = "reposync -r #{yum_repo} -p #{repo_dir}"
       IO.popen(sync_cmd).each do |line|
         @logger.info( line.split("\n").first.chomp )
@@ -119,7 +109,7 @@ module Vcrepo
     end
 
     def generate_repo
-      %x{createrepo -C --database --update -x #{File.join(@source.split('://').last, '*')} #{repo_dir}}
+      %x{createrepo -C --database --update #{repo_dir}}
     end
   end
 end
