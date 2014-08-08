@@ -58,7 +58,7 @@ module Vcrepo
     end
 
     def execute_sync
-      @logger.info('Starting Sync')
+      logger.info('Starting Sync')
   
       lock
   
@@ -70,7 +70,7 @@ module Vcrepo
         @git_repo.safe_checkout("master")
         prepare_repo()
         @git_repo.commit
-        @logger.info('Sync complete')
+        logger.info('Sync complete')
       else
         tmp_work_dir = File.join(Vcrepo.config['repo_base_location'], ".#{@name}-#{Time.new.to_i}")
   
@@ -86,12 +86,12 @@ module Vcrepo
         begin
           sync_source()
         rescue RepoError => e
-          @logger.error("Sync of repository #{@name} failed: #{e.message}")
+          logger.error("Sync of repository #{@name} failed: #{e.message}")
         else
           #Move the packages to the cache and generate metadata then commit
           prepare_repo()
           @git_repo.commit
-          @logger.info('Sync complete')
+          logger.info('Sync complete')
         end
   
         #remove the temporary work dir
@@ -112,7 +112,7 @@ module Vcrepo
         sync_cmd = "#{`which lftp`.chomp} -c '; mirror -P -c -e -L -vvv #{http_sync_includes} #{http_sync_excludes} #{@source} #{package_dir}'"
 
         IO.popen(sync_cmd).each do |line|
-          @logger.info( line.chomp )
+          logger.info( line.chomp )
         end
       else
         raise RepoError, "Failed to run sync.  Processes required lftp but it does not appear to be installed"

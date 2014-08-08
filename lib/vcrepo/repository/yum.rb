@@ -2,7 +2,7 @@ require 'fileutils'
 
 module Vcrepo
   class Repository::Yum < Vcrepo::Repository
-    attr_reader :name, :source, :type, :dir, :enabled, :git_repo
+    attr_reader :name, :source, :type, :dir, :enabled, :git_repo, :logger
 
     def self.package_patterns
       [
@@ -103,7 +103,7 @@ module Vcrepo
 
       sync_cmd = "reposync -r #{yum_repo} -p #{package_dir}"
       IO.popen(sync_cmd).each do |line|
-        @logger.info( line.split("\n").first.chomp )
+        logger.info( line.split("\n").first.chomp )
       end
     end
 
