@@ -109,7 +109,7 @@ module Vcrepo
         http_sync_includes = self.class.http_sync_include.collect { |inc| "-I #{inc}" }.join(' ')
         http_sync_excludes = (self.class.http_sync_exclude).flatten.collect { |exc| "-X \"#{exc}\"" }.join(' ')
 
-        sync_cmd = "#{`which lftp`.chomp} -c '; mirror -P -c -e -L -vvv #{http_sync_includes} #{http_sync_excludes} #{@source} #{repo_dir}'"
+        sync_cmd = "#{`which lftp`.chomp} -c '; mirror -P -c -e -L -vvv #{http_sync_includes} #{http_sync_excludes} #{@source} #{package_dir}'"
 
         IO.popen(sync_cmd).each do |line|
           @logger.info( line.chomp )
@@ -137,15 +137,16 @@ module Vcrepo
 
       begin
         File.directory?(dir) || FileUtils.mkdir_p(dir)
-      rescue
+      rescue Exception => e
+        logger.error("Can not create directory for this repository: #{e.message}")
         return nil
       end
 
       dir
     end
 
-    def repo_dir
-      dir = File.join(@git_repo.workdir, 'repo')
+    def package_dir
+      dir = File.join(@git_repo.workdir, 'packages')
       unless File.directory?(dir)
         FileUtils.mkdir_p(dir)
       end
@@ -176,34 +177,17 @@ module Vcrepo
     def create_log
       log_dir  = Vcrepo.config['logdir'] || './logs'
       log_file = File.join(log_dir, @name)
+      logger   = nil
 
-      unless File.directory?(log_dir)
-        FileUtils.mkdir_p(log_dir)
-      end
-
-      if File.file?(log_file)
-        unless File.writable?(log_file)
-          begin
-            File.chmod(0666, log_file)
-          rescue
-            (1..10).each do |i|
-              log_file = log_file + i.to_s
-              if File.file?(log_file)
-                break if File.writable?(log_file)
-              else
-                File.open(log_file, "w").close
-                File.chmod(0666, log_file)
-                break
-              end
-            end
-          end
+      begin
+        unless File.directory?(log_dir)
+          FileUtils.mkdir_p(log_dir)
         end
-      else
-        File.open(log_file, "w").close
-        File.chmod(0666, log_file)
+          logger = Logger.new(log_file)
+      rescue
+        return nil
       end
-
-      Logger.new(log_file)
+      logger
     end
 
     def prepare_repo
@@ -213,7 +197,6 @@ module Vcrepo
       end
 
       package_files.flatten.each do |file|
-        @logger.info("Linking file #{file}")
         link_package(file)
       end
     end
@@ -222,29 +205,28 @@ module Vcrepo
       packages_dir = package_cache_dir(file)
 
       newfile = File.join(packages_dir, File.basename(file))
-      @logger.info("  From #{newfile}")
       File.exists?(newfile) ? FileUtils.rm(file) : FileUtils.mv(file, newfile)
       
       FileUtils.ln_s(newfile, file)
     end
 
     def file?(file, release='master')
-      file = "repo/#{file}"
+      file = "packages/#{file}"
       @git_repo.file?(file, release)
     end
 
     def link?(file, release='master')
-      file = "repo/#{file}"
+      file = "packages/#{file}"
       @git_repo.link?(file, release)
     end
 
     def file(file, release='master')
-      file = "repo/#{file}"
+      file = "packages/#{file}"
       @git_repo.file(file, release)
     end
 
     def contents(path=nil, release='master')
-      path = path ? File.join('repo', path) : 'repo'
+      path = path ? File.join('packages', path) : 'packages'
       @git_repo.tree_contents(path, release)
     end
 

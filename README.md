@@ -9,14 +9,15 @@ This software allows for the creation of package repositories either by syncing 
 ## Installation
 The Repo Manager is a ruby sinatra app.  It requires ruby >= 1.9.3 (due to the rugged gem that provides the GIT interface)
 
+### High Level
 1. Install ruby version 1.9.3 or better (I've been using 1.9.3).  Look at rbenv if your OS doesnt have it natively.
 2. Install these gems:
   * sinatra
-  * rugged
+  * rugged (will need ruby-dev and cmake)
   * rack
 3. Clone the source
 ```
-git clone http://git.pp.optusnet.com.au/isnd-linux/vcrepo.git /opt/vcrepo
+git clone https://github.com/ChrisPortman/vcrepo.git /opt/vcrepo
 ```
 4. Open the /opt/vcrepo/config.yaml file and update the `repo_base_location` to as appropriate.
 5. From here you should be able to run with rackup:
@@ -24,6 +25,21 @@ git clone http://git.pp.optusnet.com.au/isnd-linux/vcrepo.git /opt/vcrepo
 cd /opt/vcrepo && rackup -p 80 config.ru
 ```
 6. Browse to 'http://your.server'.  It will be pretty bare as there are no repos defined.
+
+### Low Level (Ubuntu)
+
+```
+sudo -i
+apt-get install ruby ruby-dev cmake createrepo yum-utils    # Mandatory packages
+apt-get install lftp                                        # Required to sync repos from http sources
+gem install sinatra rugged rack                             # Mandatory Gems
+gem install rspec mocha                                     # Required for running tests when developing
+git clone https://github.com/ChrisPortman/vcrepo.git /opt/vcrepo
+cd /opt/vcrepo
+cp config.yaml.sample config.yaml
+vi config.yaml #update repo_base_dir, define repositories and save
+rackup -p 80 config.ru
+```
 
 ## Using the Software
 ### Defining Repos

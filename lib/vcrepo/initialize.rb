@@ -26,6 +26,12 @@ module Vcrepo
       FileUtils.mkpath(@@logdir)
     end
 
+    if @@repo_base_dir = Vcrepo.config['repo_base_dir']
+      unless File.directory? @@repo_base_dir
+        FileUtils.mkpath(@@repo_base_dir)
+      end
+    end
+
     Vcrepo.config['repositories'].each do |repo, settings|
       Vcrepo::Repository.create(repo, settings['source'], settings['type'])
     end

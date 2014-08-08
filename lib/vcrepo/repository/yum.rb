@@ -31,14 +31,13 @@ module Vcrepo
       @name     = name
       @source   = source
       @type     = 'yum'
-      @logger   = create_log
-      @enabled  = false
-
-      if @dir = check_dir
-        @git_repo = Vcrepo::Git.new(@dir, @name)
-        repo_dir
-        @enabled = true
-      end
+      @enabled  = true
+      
+      #Progress through setting up the repo as log as enabled remains true
+      (@enabled = (@logger   = create_log                  ) ? true : false) if @enabled
+      (@enabled = (@dir      = check_dir                   ) ? true : false) if @enabled
+      (@enabled = (@git_repo = Vcrepo::Git.new(@dir, @name)) ? true : false) if @enabled
+      (@enabled = (package_dir                             ) ? true : false) if @enabled
     end
 
     def sync_source
@@ -102,14 +101,16 @@ module Vcrepo
 
       yum_repo = @source.split('://').last
 
-      sync_cmd = "reposync -r #{yum_repo} -p #{repo_dir}"
+      sync_cmd = "reposync -r #{yum_repo} -p #{package_dir}"
       IO.popen(sync_cmd).each do |line|
         @logger.info( line.split("\n").first.chomp )
       end
     end
 
     def generate_repo
-      %x{createrepo -C --database --update #{repo_dir}}
+      system('which createrepo > /dev/null 2>&1') or
+        raise RepoError, "Program, 'createrepo' is not available in the path"
+      %x{createrepo -C --database --update #{package_dir}}
     end
   end
 end
