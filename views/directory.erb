@@ -1,4 +1,31 @@
 <%
+def icon(file)
+  filetypes = {
+    :archive => %w{ tar zip gz bz2 rar },
+    :markup  => %w{ xml json yaml },
+  }
+  
+  iconsdir = File.join(File.dirname(__FILE__), '..', 'public', 'icons')
+  ext      = File.extname(file).sub(/^\./, '')
+  ext      = ext.empty? ? file : ext
+  iconsize = '24'
+  icon     = 'file'
+
+  if File.exist?(File.join(iconsdir, "#{ext}.png"))
+    #icon specific to the extension
+    icon = ext
+  else
+    #icon that fits the group of extensions this extension belongs to
+    filetypes.each do |type, exts|
+      if exts.include?(ext) and File.exists?(File.join(iconsdir, "#{type.to_s}.png"))
+        icon = type.to_s 
+      end
+    end
+  end
+
+  %Q|src="/icons/#{icon}.png" alt="#{icon}" width="#{iconsize}" height="#{iconsize}"|
+end
+
 if @explicit_rev
   base = "/rev/#{@rev}/"
 else
@@ -14,12 +41,11 @@ if @repo_name
   end
   up_one.sub!(/[^\/]+\/?$/,'')
 %>
-  <a href="<%= up_one %>">../</a><br />
+    <img <%= icon('folder') %>><a href="<%= up_one %>">../</a><br />
 <% end %>
-
 <% @dirs.each do |val| %>
-  <a href="<%= base %><%= val %>/"><%= val.split('/').last %>/</a><br />
+    <img <%= icon('folder') %>><a href="<%= base %><%= val %>/"><%= val.split('/').last %>/</a><br />
 <% end %>
 <% @files.each do |val| %>
-  <a href="<%= base %><%= val %>"><%= val.split('/').last %></a><br />
+    <img <%= icon(val.split('/').last) %>><a href="<%= base %><%= val %>"><%= val.split('/').last %></a><br />
 <% end %>

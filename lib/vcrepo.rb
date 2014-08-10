@@ -10,6 +10,24 @@ class RepoError < RuntimeError
   attr_reader 'status'
 end
 
+class FileSystemError < RuntimeError
+  def initialize(message, status=500)
+    @status = status
+    super(message)
+  end
+
+  attr_reader 'status'
+end
+
+class ConfigError < RuntimeError
+  def initialize(message, status=500)
+    @status = status
+    super(message)
+  end
+
+  attr_reader 'status'
+end
+
 require_relative 'vcrepo/config'
 require_relative 'vcrepo/git'
 require_relative 'vcrepo/initialize'

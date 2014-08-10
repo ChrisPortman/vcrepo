@@ -27,36 +27,7 @@ module Vcrepo
       ]
     end
 
-    def initialize(name, source)
-      @name     = name
-      @source   = source
-      @type     = 'yum'
-      @enabled  = true
-      
-      #Progress through setting up the repo as log as enabled remains true
-      (@enabled = (@logger   = create_log                  ) ? true : false) if @enabled
-      (@enabled = (@dir      = check_dir                   ) ? true : false) if @enabled
-      (@enabled = (@git_repo = Vcrepo::Git.new(@dir, @name)) ? true : false) if @enabled
-      (@enabled = (package_dir                             ) ? true : false) if @enabled
-    end
-
-    def sync_source
-      case
-        when source =~ /^http/
-          http_sync()
-        when source =~ /^yum/
-          yum_sync()
-        when source =~ /^redhat_yum/
-          redhat_yum_sync()
-        when source =~ /^local/
-          local_sync()
-        else
-          raise RepoError, "Unrecognised source type: #{source}"
-      end
-      generate_repo
-    end
-
-    def redhat_yum_sync
+    def sync_redhat_yum
       client_cert = Vcrepo.config['redhat_client_cert'] or
         raise RepoError, "Syncing Redhat repos requires 'redhat_client_cert' config value"
       client_key  = Vcrepo.config['redhat_client_key'] or
@@ -95,7 +66,7 @@ module Vcrepo
       yum_sync
     end
 
-    def yum_sync
+    def sync_yum
       system('which reposync > /dev/null 2>&1') or
         raise RepoError, "Program, 'reposync' is not available in the path"
 

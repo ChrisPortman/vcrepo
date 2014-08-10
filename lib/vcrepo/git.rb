@@ -6,7 +6,7 @@ module Vcrepo
 
     def initialize(dir, package_repo)
       @real_workdir = dir
-      @repo         = open_or_create()
+      @repo         = open_or_create
       @package_repo = package_repo
     end
 

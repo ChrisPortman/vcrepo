@@ -1,17 +1,33 @@
 module Vcrepo
   class Repository
+    attr_reader :name, :source, :type, :dir, :enabled, :git_repo, :logger
+
     ### Class Variables ###
     #Stores the repository object for each repository
     @@repositories = {}
 
     ### Class Methods
+    def self.package_patterns
+      [ "*" ]
+    end
+
+    def self.http_sync_include
+      []  #No specific includes
+    end
+
+    def self.http_sync_exclude
+      []  #No excludes
+    end
+
     def self.create(name, source, type)
       case type
         when 'yum'
-          @@repositories[name] = Vcrepo::Repository::Yum.new(name, source)
+          @@repositories[name] = Vcrepo::Repository::Yum.new(name, source, type)
         when 'apt'
-          @@repositories[name] = Vcrepo::Repository::Apt.new(name, source)
+          @@repositories[name] = Vcrepo::Repository::Apt.new(name, source, type)
         else
+          #Just create a generic file repository with basic sync options and no metadata generation
+          @@repositories[name] = Vcrepo::Repository.new(name, source)
       end
     end
 
@@ -44,6 +60,29 @@ module Vcrepo
       end
     end
 
+    def initialize(name, source, type='generic')
+      @name     = name
+      @source   = source
+      @type     = type
+      @enabled  = true
+      
+      #Progress through setting up the repo as log as enabled remains true
+      (@enabled = (@logger   = create_log                  ) ? true : false) if @enabled
+      (@enabled = (@dir      = check_dir                   ) ? true : false) if @enabled
+      (@enabled = (@git_repo = Vcrepo::Git.new(@dir, @name)) ? true : false) if @enabled
+      (@enabled = (package_dir                             ) ? true : false) if @enabled
+    end
+
+    #Dispatch to a method that matches sync_<proto>
+    def sync_source
+      proto = source.match(/^(\w+):/)[1]
+      if self.respond_to?("sync_#{proto}")
+        self.method("sync_#{proto}").call
+      else
+        raise RepoError, "Unknown sync protocol '#{proto}'"
+      end
+    end
+
     def sync
       if locked?
         return [ 402, "Sync is already in progress" ]
@@ -56,7 +95,7 @@ module Vcrepo
       
       [ 200, "Sync of #{@name} has been started." ]
     end
-
+    
     def execute_sync
       logger.info('Starting Sync')
   
@@ -67,12 +106,13 @@ module Vcrepo
       #For locally sourced repos though, its expected that the admin knows what theyre doing.
       if source =~ /^local/
         #This should make the repo look like the last commit on Master without clobering any manual adds since (we want to add those)
-        @git_repo.safe_checkout("master")
-        prepare_repo()
-        @git_repo.commit
+        git_repo.safe_checkout("master")
+        prepare_repo
+        generate_repo
+        git_repo.commit
         logger.info('Sync complete')
       else
-        tmp_work_dir = File.join(Vcrepo.config['repo_base_location'], ".#{@name}-#{Time.new.to_i}")
+        tmp_work_dir = File.join(Vcrepo.config['repo_base_dir'], ".#{@name}-#{Time.new.to_i}")
   
         #create and use a temporary work dir so manual stuff in the normal work dir doesnt get in the way
         unless File.directory?(tmp_work_dir)
@@ -80,17 +120,18 @@ module Vcrepo
         end
   
         #Check the master branch out to the temp work dir.
-        @git_repo.hard_checkout("master", tmp_work_dir)
+        git_repo.hard_checkout("master", tmp_work_dir)
   
         #Run the sync source method which is defined in the repositories type class
         begin
-          sync_source()
+          sync_source
         rescue RepoError => e
           logger.error("Sync of repository #{@name} failed: #{e.message}")
         else
           #Move the packages to the cache and generate metadata then commit
-          prepare_repo()
-          @git_repo.commit
+          generate_repo
+          prepare_repo
+          git_repo.commit
           logger.info('Sync complete')
         end
   
@@ -99,17 +140,17 @@ module Vcrepo
       end
   
       #Set the workdir of the GIT repo back to the real one
-      @git_repo.reset_workdir
+      git_repo.reset_workdir
   
       unlock    
     end
 
-    def http_sync
+    def sync_http
       if system('which lftp > /dev/null 2>&1')
-        http_sync_includes = self.class.http_sync_include.collect { |inc| "-I #{inc}" }.join(' ')
-        http_sync_excludes = (self.class.http_sync_exclude).flatten.collect { |exc| "-X \"#{exc}\"" }.join(' ')
+        http_sync_includes = self.class.respond_to?('http_sync_include') ? self.class.http_sync_include.collect { |inc| "-I #{inc}" }.join(' ') : ''
+        http_sync_excludes = self.class.respond_to?('http_sync_exclude') ? self.class.http_sync_exclude.flatten.collect { |exc| "-X \"#{exc}\"" }.join(' ') : ''
 
-        sync_cmd = "#{`which lftp`.chomp} -c '; mirror -P -c -e -L -vvv #{http_sync_includes} #{http_sync_excludes} #{@source} #{package_dir}'"
+        sync_cmd = "#{`which lftp`.chomp} -c '; mirror -P -c -e -L -vvv #{http_sync_includes} #{http_sync_excludes} #{@source} #{package_dir}'".gsub(/\s+/, ' ')
 
         IO.popen(sync_cmd).each do |line|
           logger.info( line.chomp )
@@ -118,27 +159,27 @@ module Vcrepo
         raise RepoError, "Failed to run sync.  Processes required lftp but it does not appear to be installed"
       end
     end
-
+    
     def lock
-      FileUtils.touch(File.join(@git_repo.path, '.locked'))
+      FileUtils.touch(File.join(git_repo.path, '.locked'))
     end
 
     def unlock
-      FileUtils.rm_f(File.join(@git_repo.path, '.locked'))
+      FileUtils.rm_f(File.join(git_repo.path, '.locked'))
     end
 
     def locked?
-      File.exist?(File.join(@git_repo.path, '.locked'))
+      File.exist?(File.join(git_repo.path, '.locked'))
     end
 
     def check_dir
-      base = Vcrepo.config['repo_base_location']
+      base = Vcrepo.config['repo_base_dir']
       dir  = File.join(base, @type, @name)
 
       begin
         File.directory?(dir) || FileUtils.mkdir_p(dir)
       rescue Exception => e
-        logger.error("Can not create directory for this repository: #{e.message}")
+        logger.error("Can not create directory for this repository it will be disabled: #{e.message}")
         return nil
       end
 
@@ -146,9 +187,14 @@ module Vcrepo
     end
 
     def package_dir
-      dir = File.join(@git_repo.workdir, 'packages')
+      dir = File.join(git_repo.workdir, 'packages')
       unless File.directory?(dir)
-        FileUtils.mkdir_p(dir)
+        begin
+          FileUtils.mkdir_p(dir)
+        rescue Exception => e
+          logger.error("Can not create directory for the packages it will be disabled: #{e.message}")
+          return nil
+        end
       end
       dir
     end
@@ -167,7 +213,7 @@ module Vcrepo
         end.compact.first
       end      
 
-      dir = File.join([Vcrepo.config['repo_base_location'], 'package_cache', extension, index_path].compact)
+      dir = File.join([Vcrepo.config['repo_base_dir'], 'package_cache', extension, index_path].compact)
       unless File.directory?(dir)
         FileUtils.mkdir_p(dir)
       end
@@ -190,10 +236,15 @@ module Vcrepo
       logger
     end
 
+    def generate_repo
+      # This is a stub.  Generic repos dont generate metadata. 
+      # Classes for specific types will overload this method
+    end
+    
     def prepare_repo
       package_files = []
       self.class.package_patterns.each do |pattern|
-        package_files << Dir.glob(File.join(@git_repo.workdir, '**', pattern))
+        package_files << Dir.glob(File.join(git_repo.workdir, '**', pattern))
       end
 
       package_files.flatten.each do |file|
@@ -212,26 +263,26 @@ module Vcrepo
 
     def file?(file, release='master')
       file = "packages/#{file}"
-      @git_repo.file?(file, release)
+      git_repo.file?(file, release)
     end
 
     def link?(file, release='master')
       file = "packages/#{file}"
-      @git_repo.link?(file, release)
+      git_repo.link?(file, release)
     end
 
     def file(file, release='master')
       file = "packages/#{file}"
-      @git_repo.file(file, release)
+      git_repo.file(file, release)
     end
 
     def contents(path=nil, release='master')
       path = path ? File.join('packages', path) : 'packages'
-      @git_repo.tree_contents(path, release)
+      git_repo.tree_contents(path, release)
     end
 
     def find_commit(release)
-      @git_repo.find_commit(release)
+      git_repo.find_commit(release)
     end
   end
 end

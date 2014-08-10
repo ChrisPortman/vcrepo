@@ -2,14 +2,14 @@ require 'spec_helper'
 
 describe "Vcrepo::Repository" do
   before :each do
-    Vcrepo.config.stubs(:[]).with('repo_base_location').returns('/tmp/test_repos/')
+    Vcrepo.config.stubs(:[]).with('repo_base_dir').returns('/tmp/test_repos/')
     Vcrepo.config.stubs(:[]).with('repositories').returns({ 'test_repo' => { 'type' => 'yum', 'source' => 'local' } })
     Vcrepo.config.stubs(:[]).with('git_author_name').returns(nil)
     Vcrepo.config.stubs(:[]).with('git_author_email').returns(nil)
 
     logger = mock()
-    Vcrepo::Repository::Yum.any_instance.stubs(:create_log).returns(logger)
-    Vcrepo::Repository::Yum.any_instance.stubs(:logger).returns(logger)
+    Vcrepo::Repository.any_instance.stubs(:create_log).returns(logger)
+    Vcrepo::Repository.any_instance.stubs(:logger).returns(logger)
     logger.stubs(:info).returns(true)
   end
 
@@ -63,19 +63,19 @@ describe "Vcrepo::Repository" do
 
   context "sync" do
     before :each do
-      Vcrepo::Repository::Yum.any_instance.stubs(:check_dir).returns('/dev/null')
+      Vcrepo::Repository.any_instance.stubs(:check_dir).returns('/dev/null')
       Vcrepo::Git.stubs(:new).returns(true)
-      Vcrepo::Repository::Yum.any_instance.stubs(:repo_dir).returns('/dev/null')
+      Vcrepo::Repository.any_instance.stubs(:package_dir).returns('/dev/null')
     end
 
     it "should report that it cannot run if the repo is locked" do
-      repo = Vcrepo::Repository::Yum.new('my_repo', 'local') 
+      repo = Vcrepo::Repository.new('my_repo', 'local') 
       repo.expects(:locked?).returns(true)
       expect(repo.sync).to eq([402, "Sync is already in progress"])
     end
 
     it "should run if the repo is not locked" do
-      repo = Vcrepo::Repository::Yum.new('my_repo', 'local') 
+      repo = Vcrepo::Repository.new('my_repo', 'local') 
       repo.expects(:locked?).returns(false)
       repo.stubs(:execute_sync).returns(true)
       expect(repo.sync).to eq([ 200, "Sync of my_repo has been started." ])
@@ -84,7 +84,7 @@ describe "Vcrepo::Repository" do
   
   context "execute_sync" do
     it "should call certain processes for local repos" do
-      repo = Vcrepo::Repository::Yum.new('test_repo', 'local')
+      repo = Vcrepo::Repository.new('test_repo', 'local')
       repo.expects(:lock).returns(true)
       Vcrepo::Git.any_instance.expects(:safe_checkout).returns(true)
       repo.expects(:prepare_repo).returns(true)
@@ -97,43 +97,43 @@ describe "Vcrepo::Repository" do
   
   context "lock" do
     it "Should create a lock file in the GIT directory" do
-      repo = Vcrepo::Repository::Yum.new('test_repo', 'local')
-      expect(File.exists?('/tmp/test_repos/yum/test_repo/.git/.locked')).to be false
+      repo = Vcrepo::Repository.new('test_repo', 'local')
+      expect(File.exists?('/tmp/test_repos/generic/test_repo/.git/.locked')).to be false
       repo.lock
-      expect(File.exists?('/tmp/test_repos/yum/test_repo/.git/.locked')).to be true
+      expect(File.exists?('/tmp/test_repos/generic/test_repo/.git/.locked')).to be true
     end
   end
       
   context "unlock" do
     it "Should create a lock file in the GIT directory" do
-      repo = Vcrepo::Repository::Yum.new('test_repo', 'local')
+      repo = Vcrepo::Repository.new('test_repo', 'local')
       repo.lock
-      expect(File.exists?('/tmp/test_repos/yum/test_repo/.git/.locked')).to be true
+      expect(File.exists?('/tmp/test_repos/generic/test_repo/.git/.locked')).to be true
       repo.unlock
-      expect(File.exists?('/tmp/test_repos/yum/test_repo/.git/.locked')).to be false
+      expect(File.exists?('/tmp/test_repos/generic/test_repo/.git/.locked')).to be false
     end
   end
 
   context "locked?" do
     it "Should be false before a repo is locked" do
-      repo = Vcrepo::Repository::Yum.new('test_repo', 'local')
-      expect(File.exists?('/tmp/test_repos/yum/test_repo/.git/.locked')).to be false
+      repo = Vcrepo::Repository.new('test_repo', 'local')
+      expect(File.exists?('/tmp/test_repos/generic/test_repo/.git/.locked')).to be false
       expect(repo.locked?).to be false
     end
 
     it "Should be true after a repo is locked and without it being unlocked" do
-      repo = Vcrepo::Repository::Yum.new('test_repo', 'local')
+      repo = Vcrepo::Repository.new('test_repo', 'local')
       repo.lock
-      expect(File.exists?('/tmp/test_repos/yum/test_repo/.git/.locked')).to be true
+      expect(File.exists?('/tmp/test_repos/generic/test_repo/.git/.locked')).to be true
       expect(repo.locked?).to be true
     end
 
     it "Should be false after being locked and unlocked" do
-      repo = Vcrepo::Repository::Yum.new('test_repo', 'local')
+      repo = Vcrepo::Repository.new('test_repo', 'local')
       repo.lock
-      expect(File.exists?('/tmp/test_repos/yum/test_repo/.git/.locked')).to be true
+      expect(File.exists?('/tmp/test_repos/generic/test_repo/.git/.locked')).to be true
       repo.unlock
-      expect(File.exists?('/tmp/test_repos/yum/test_repo/.git/.locked')).to be false
+      expect(File.exists?('/tmp/test_repos/generic/test_repo/.git/.locked')).to be false
       expect(repo.locked?).to be false
     end
   end
@@ -141,40 +141,55 @@ describe "Vcrepo::Repository" do
   context "check_dir" do
     it "should create the directory tree to the repo" do
       Vcrepo::Git.stubs(:new).returns(true)
-      Vcrepo::Repository::Yum.any_instance.stubs(:repo_dir).returns('/dev/null')
+      Vcrepo::Repository.any_instance.stubs(:package_dir).returns('/dev/null')
 
       #stub check_dir so that it does nothing when the repo obj is instantiated.
       #then create the repo, unstub check_dir and then run check_dir in isolation
-      Vcrepo::Repository::Yum.any_instance.stubs(:check_dir).returns(true)
-      repo = Vcrepo::Repository::Yum.new('test_repo', 'local')
-      Vcrepo::Repository::Yum.any_instance.unstub(:check_dir)
+      Vcrepo::Repository.any_instance.stubs(:check_dir).returns(true)
+      repo = Vcrepo::Repository.new('test_repo', 'local')
+      Vcrepo::Repository.any_instance.unstub(:check_dir)
 
-      expect(File.directory?('/tmp/test_repos/yum/test_repo/')).to be false
+      expect(File.directory?('/tmp/test_repos/generic/test_repo/')).to be false
       repo.check_dir
-      expect(File.directory?('/tmp/test_repos/yum/test_repo/')).to be true
+      expect(File.directory?('/tmp/test_repos/generic/test_repo/')).to be true
     end
   end
 
-  context "http_sync" do
+  context "sync_http" do
     it "should raise an error if lftp is not available" do
-      repo = Vcrepo::Repository::Yum.new('test_repo', 'local')
+      repo = Vcrepo::Repository.new('test_repo', 'local')
       repo.expects(:system).with('which lftp > /dev/null 2>&1').returns(false)
-      expect{repo.http_sync}.to raise_error(RepoError)
+      expect{repo.sync_http}.to raise_error(RepoError)
     end
     
-    it "should run lftp with the appropriate options" do
-      repo = Vcrepo::Repository::Yum.new('test_repo', 'local')
-      repo.expects(:system).with('which lftp > /dev/null 2>&1').returns(true)
-      repo.expects(:`).with('which lftp').returns('/bin/lftp')
+    describe "runs lftp with the appropriate options" do
+      it "for yum repos that add includes and exclues options" do
+        repo = Vcrepo::Repository::Yum.new('test_repo', 'local', 'yum')
+        repo.expects(:system).with('which lftp > /dev/null 2>&1').returns(true)
+        repo.expects(:`).with('which lftp').returns('/bin/lftp')
+        
+        excludes = [ "-X \"/headers/\"", "-X \"/repodata/\"", "-X \"/SRPMS/\"", "-X \"*.src.rpm\"" ].join(' ')
+        includes = "-I *.rpm"
+        
+        #Expected sync command 
+        sync_cmd = "/bin/lftp -c '; mirror -P -c -e -L -vvv #{includes} #{excludes} local /tmp/test_repos/yum/test_repo/packages'"
+        IO.expects(:popen).with(sync_cmd).returns([])
+  
+        repo.sync_http
+      end
       
-      excludes = [ "-X \"/headers/\"", "-X \"/repodata/\"", "-X \"/SRPMS/\"", "-X \"*.src.rpm\"" ].join(' ')
-      includes = "-I *.rpm"
-      
-      #Expected sync command 
-      sync_cmd = "/bin/lftp -c '; mirror -P -c -e -L -vvv #{includes} #{excludes} local /tmp/test_repos/yum/test_repo/repo'"
-      IO.expects(:popen).with(sync_cmd).returns([])
+      it "for generic repos that DO NOT add includes and exclues options" do
+        repo = Vcrepo::Repository.new('test_repo', 'local')
+        repo.expects(:system).with('which lftp > /dev/null 2>&1').returns(true)
+        repo.expects(:`).with('which lftp').returns('/bin/lftp')
+        
+        #Expected sync command 
+        sync_cmd = "/bin/lftp -c '; mirror -P -c -e -L -vvv local /tmp/test_repos/generic/test_repo/packages'"
+        IO.expects(:popen).with(sync_cmd).returns([])
+  
+        repo.sync_http
+      end
 
-      repo.http_sync
     end
   end
 end
