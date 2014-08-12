@@ -1,10 +1,18 @@
-# Repo Manager
+# VCRepo - Package Repositories Meet Git
 
 ## Introduction
 
 **This is alpha software that has limited testing and has yet to be deployed in a production environment**
 
 This software allows for the creation of package repositories either by syncing them from upsream repositories or by generating them from local packages.  The repositories are maintained under GIT control so that you can arbitrarily revert to previous snapshots using standard GIT workflows.
+
+Currently it can handle YUM repositories including:
+   - Syncing from  Red Hat restricted repositories (channels)
+   - Syncing from open YUM repositories
+   - Syncing from HTTP indexes listing package files
+   - Generating repositories from local package files
+
+There is also some preliminary support for syncing APT repositories from upstream APT servers.
 
 ## Installation
 The Repo Manager is a ruby sinatra app.  It requires ruby >= 1.9.3 (due to the rugged gem that provides the GIT interface)
@@ -57,7 +65,13 @@ repositories:
     source: 'http://yum.puppetlabs.com/el/6/products/x86_64/'
 ```
 
-The key for the repo, in this case 'shinyrepo_myos_osvers_myarch' can be whatever you like.  It will be what shows up in the list of repositories when you browse to / on your server.  The key/values inside the hash depend on the type of repository your creating.  In this case, its a yum (I havent implemented any other types yet) repository.  The source is where to get the packages from.
+The key for the repo, in this case 'shinyrepo_myos_osvers_myarch' can be whatever you like.  It will be what shows up in the list of repositories when you browse to / on your server.  The key/values inside the hash depend on the type of repository your creating.  The source is where to get the packages from.
+
+Valid types are:
+   - yum
+   - apt
+
+Note that the type is not indicative of the upstream source.  The upstream may just be a bunch of package file in a directory.
 
 Valid source configs look like:
 
@@ -73,6 +87,9 @@ source: yum://yum_repos_d_config_name
 
 # Sync from redhat protected repositories e.g, RHEL Server (see more below), that is defined in /etc/yum.repos.d/ (does not need to be enabled)
 source: redhat_yum://yum_repos_d_config_name
+
+# Sync from an APT repository
+source: deb http://mirror.optusnet.com.au/linuxmint/packages distribution component1 componentN
 ```
 
 ### The Client
@@ -169,6 +186,51 @@ redhat_yum://repo-name
 ```
 
 where repo-name is the name of the repo as defined in the rhel6/7.repo files in /etc/yum.repos.d/
+
+#### Syncing APT repos
+
+**This is really new and experimental**
+
+APT repositories can be pulled in as mirrors of an upstream APT repository (generating repositories from a bunch of deb packages is still a work in progress).  This is made possible using the apt-mirror tool (thanks to http://apt-mirror.github.io/ ).
+
+When creating your repo definition in the config it should look like this:
+
+```
+  repositories:
+    linuxmint-qiana-main:
+      type: apt
+      source: 'deb http://mirror.optusnet.com.au/linuxmint/packages/ qiana main'
+```
+
+The source is basically exactly the way you would specify them in the sources.list file on an APT machine.
+
+You can either specify multiple "components" (e.g. main, non-free, etc) and have them all pulled in to the one Git managed repo, eg:
+
+```
+  repositories:
+    linuxmint-qiana:
+      type: apt
+      source: 'deb http://mirror.optusnet.com.au/linuxmint/packages/ qiana main non-free'
+```
+
+Or you can separate them so that you can version control the components independantly, eg:
+
+```
+  repositories:
+    linuxmint-qiana-main:
+      type: apt
+      source: 'deb http://mirror.optusnet.com.au/linuxmint/packages/ qiana main'
+    linuxmint-qiana-non-free:
+      type: apt
+      source: 'deb http://mirror.optusnet.com.au/linuxmint/packages/ qiana non-free'
+```
+
+Note though that these are 2 different repositories, with different names, and so on the clients it will have to be configured like:
+
+```
+deb http://reposerver/linuxmint-qiana-main qiana main
+deb http://reposerver/linuxmint-qiana-non-free qiana non-free
+```
 
 ### API
 There is some documentation for the API in the [API Doc](docs/api.md)
