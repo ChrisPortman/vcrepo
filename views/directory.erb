@@ -1,23 +1,28 @@
 <%
 def icon(file)
+  # Map extensions to types
   filetypes = {
     :archive => %w{ tar zip gz bz2 rar },
     :markup  => %w{ xml json yaml },
+    :text    => %w{ txt doc docx odt },
+    :image   => %w{ png gif jpg jpeg tiff bmp },
   }
-  
-  iconsdir = File.join(File.dirname(__FILE__), '..', 'public', 'icons')
-  ext      = File.extname(file).sub(/^\./, '')
-  ext      = ext.empty? ? file : ext
+
+  # Defaults
   iconsize = '24'
   icon     = 'file'
+  
+  iconsdir = File.join(File.dirname(__FILE__), '..', 'public', 'icons')
+  filetype = File.extname(file).sub(/^\./, '')
+  filetype = filetype.empty? ? file : filetype
 
-  if File.exist?(File.join(iconsdir, "#{ext}.png"))
+  if File.exist?(File.join(iconsdir, "#{filetype}.png"))
     #icon specific to the extension
-    icon = ext
+    icon = filetype
   else
-    #icon that fits the group of extensions this extension belongs to
+    #icon that fits the file type this extension belongs to
     filetypes.each do |type, exts|
-      if exts.include?(ext) and File.exists?(File.join(iconsdir, "#{type.to_s}.png"))
+      if exts.include?(filetype) and File.exists?(File.join(iconsdir, "#{type.to_s}.png"))
         icon = type.to_s 
       end
     end

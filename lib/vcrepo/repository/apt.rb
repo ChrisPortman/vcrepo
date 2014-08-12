@@ -1,7 +1,4 @@
 require 'uri'
-require 'net/http'
-require 'zlib'
-
 
 module Vcrepo
   class Repository::Apt < Vcrepo::Repository
@@ -55,8 +52,8 @@ module Vcrepo
     def apt_mirror_config
       archs = ['i386', 'amd64' ]
       <<-END.gsub(/^\s{8}/, '')
-        set base_path      #{package_dir}
-        set mirror_path    $base_path
+        set base_path      #{git_repo.workdir}
+        set mirror_path    $base_path/packages
         set skel_path      $base_path/skel
         set var_path       $base_path/var
         set clean_script   $var_path/clean.sh
