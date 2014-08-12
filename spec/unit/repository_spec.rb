@@ -138,19 +138,19 @@ describe "Vcrepo::Repository" do
     end
   end
 
-  context "check_dir" do
+  context "git_dir" do
     it "should create the directory tree to the repo" do
       Vcrepo::Git.stubs(:new).returns(true)
       Vcrepo::Repository.any_instance.stubs(:package_dir).returns('/dev/null')
 
       #stub check_dir so that it does nothing when the repo obj is instantiated.
       #then create the repo, unstub check_dir and then run check_dir in isolation
-      Vcrepo::Repository.any_instance.stubs(:check_dir).returns(true)
+      Vcrepo::Repository.any_instance.stubs(:git_dir).returns(true)
       repo = Vcrepo::Repository.new('test_repo', 'local')
-      Vcrepo::Repository.any_instance.unstub(:check_dir)
+      Vcrepo::Repository.any_instance.unstub(:git_dir)
 
       expect(File.directory?('/tmp/test_repos/generic/test_repo/')).to be false
-      repo.check_dir
+      repo.git_dir
       expect(File.directory?('/tmp/test_repos/generic/test_repo/')).to be true
     end
   end

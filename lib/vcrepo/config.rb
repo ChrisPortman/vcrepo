@@ -22,6 +22,10 @@ module Vcrepo
       
       Vcrepo.config['package_indexing_patterns'] || defaults
     end
+    
+    def root_dir
+      __FILE__.sub(/\/lib\/.+/, '')
+    end
 
     def [](key)
       @config[key]

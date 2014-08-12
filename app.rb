@@ -71,11 +71,13 @@ class Vcrepo::App < Sinatra::Base
             elsif repo.file?(@path, @rev)
               content_type 'application/octet-stream'
               repo.file(@path, @rev)
-            else
+            elsif repo.dir?(@path, @rev)
               contents = repo.contents(@path, @rev)
               dirs  = contents.select { |item| item[:type] == :tree }.collect { |tree| File.join(@path, tree[:name].to_s) }.sort
               files = contents.select { |item| item[:type] == :blob }.collect { |blob| File.join(@path, blob[:name].to_s) }.sort
               show_dir(dirs, files)
+            else
+              [ 404, "Not Found" ]
             end
           else
             [ 404, "No such repository" ]

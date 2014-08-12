@@ -68,14 +68,14 @@ module Vcrepo
       
       #Progress through setting up the repo as log as enabled remains true
       (@enabled = (@logger   = create_log                  ) ? true : false) if @enabled
-      (@enabled = (@dir      = check_dir                   ) ? true : false) if @enabled
+      (@enabled = (@dir      = git_dir                   ) ? true : false) if @enabled
       (@enabled = (@git_repo = Vcrepo::Git.new(@dir, @name)) ? true : false) if @enabled
       (@enabled = (package_dir                             ) ? true : false) if @enabled
     end
 
     #Dispatch to a method that matches sync_<proto>
     def sync_source
-      proto = source.match(/^(\w+):/)[1]
+      proto = source.match(/^(\w+)/)[1]
       if self.respond_to?("sync_#{proto}")
         self.method("sync_#{proto}").call
       else
@@ -172,7 +172,7 @@ module Vcrepo
       File.exist?(File.join(git_repo.path, '.locked'))
     end
 
-    def check_dir
+    def git_dir
       base = Vcrepo.config['repo_base_dir']
       dir  = File.join(base, @type, @name)
 
@@ -269,6 +269,11 @@ module Vcrepo
     def link?(file, release='master')
       file = "packages/#{file}"
       git_repo.link?(file, release)
+    end
+    
+    def dir?(file, release='master')
+      file = "packages/#{file}"
+      git_repo.dir?(file, release)
     end
 
     def file(file, release='master')

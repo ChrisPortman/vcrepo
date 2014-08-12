@@ -59,6 +59,14 @@ module Vcrepo
         false
       end
     end
+    
+    def dir?(obj, release='master')
+      if item = find_leaf(obj, release)
+        item[:type] == :tree ? true : false
+      else
+        false
+      end
+    end
 
     def tree_contents(path='', release='master')
       if tree = find_leaf(path, release)
@@ -193,8 +201,8 @@ module Vcrepo
     def find_leaf(name, release)
       path   = name.split('/')
       leaf   = path.pop
+      
       if commit = find_commit(release)
-        
         tree = commit.tree
         path.each do |p|
           tree.each_tree do |t|
