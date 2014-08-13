@@ -1,10 +1,16 @@
 module Vcrepo
   class Api::Repository
-    def self.sub_collections
-      [ :commit, :tag, :branch ]
+    def self.sub_collections(*args)
+      args = args.first
+      if repo = args.shift
+        if repo = Vcrepo::Repository.find(repo) and repo.git_repo
+          return [ :commit, :tag, :branch ]
+        end
+      end
+      []
     end
 
-    def self.actions
+    def self.actions(*args)
       [ :sync ]
     end
     

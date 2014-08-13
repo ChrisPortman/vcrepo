@@ -116,6 +116,12 @@ class Vcrepo::App < Sinatra::Base
     end
 
     if our_class = find_class(namespace)
+      if our_class.methods.include?( :valid? )
+        unless our_class.method('valid?').call(args.dup)
+          return [ 404, "API not valid for this Repository" ]
+        end
+      end
+
       if operation
         if our_class.methods.include?(operation.to_sym)
           our_method = our_class.method(operation)
@@ -125,13 +131,13 @@ class Vcrepo::App < Sinatra::Base
         end
 
       else
-        ret = our_class.method('find').call(args)
+        ret = our_class.method('find').call(args.dup)
 
         if ret.is_a? Hash or ret.first.is_a? Hash
           #This is a specific item
           if our_class.methods.include?(:sub_collections)
             our_method = our_class.method('sub_collections')
-            cols = our_method.call.collect do |c|
+            cols = our_method.call(args).collect do |c|
               {
                 :id   => c,
                 :href => uri_join(url, c),
@@ -142,7 +148,7 @@ class Vcrepo::App < Sinatra::Base
   
           if our_class.methods.include?(:actions)
             our_method = our_class.method('actions')
-            actions = our_method.call.collect do |a|
+            actions = our_method.call(args.dup).collect do |a|
               {
                 :id   => a,
                 :href => uri_join(url, a),

@@ -1,7 +1,17 @@
 module Vcrepo
   class Api::Repository::Branch
 
-    def self.actions
+    def self.valid?(*args)
+      args     = args.first
+      reponame = args.shift
+      if repo = Vcrepo::Repository.find(reponame)
+        repo.git_repo ? true : false
+      else
+        false
+      end
+    end
+
+    def self.actions(*args)
       [ :delete ]
     end
 

@@ -145,5 +145,10 @@ module Vcrepo
       # is just to remount the ISO.
       false
     end
+    
+    def git_repo
+      #Stub returns nil as git is not applicable to ISO based repos
+      nil
+    end
   end
 end

@@ -1,16 +1,29 @@
 module Vcrepo
   class Api::Repository::Tag
-  
-    def self.actions
+
+    def self.valid?(*args)
+      args     = args.first
+      reponame = args.shift
+      if repo = Vcrepo::Repository.find(reponame)
+        repo.git_repo ? true : false
+      else
+        false
+      end
+    end
+
+    def self.actions(*args)
       [ :delete ]
     end
 
     #Getters for collection and individuals.
     def self.collect(reponame)
       if repo = Vcrepo::Repository.find(reponame)
-        repo = repo.git_repo.repo
-        if tags = repo.tags
-          tags.collect { |t| t.name }
+        if repo = repo.git_repo.repo
+          if tags = repo.tags
+            tags.collect { |t| t.name }
+          else
+            []
+          end
         else
           []
         end
@@ -27,7 +40,6 @@ module Vcrepo
       if id
         if repo = Vcrepo::Repository.find(reponame)
           repo = repo.git_repo
-
           if tag = repo.lookup_tag(id)
             ret = {
               :id      => tag.name,
