@@ -232,6 +232,54 @@ deb http://reposerver/linuxmint-qiana-main qiana main
 deb http://reposerver/linuxmint-qiana-non-free qiana non-free
 ```
 
+#### ISOs
+
+You can present ISO based repositories by copying the ISO onto to the server and then specifying a repository in the configuration like:
+
+```
+  repositories:
+    centos7-x86_64-dvd:
+      type: iso
+      source: 'iso:///var/isos/CentOS-7.0-1406-x86_64-DVD.iso'
+```
+
+The service will attempt to mount the ISO under /repo_base_dir/iso/repo_name
+
+Running a sync process on this repo will unmount and remount the ISO.
+
+**IMPORTANT**
+
+Mounting stuff is generally only available to the root user while web apps seldom run as the root user.  If you want to use ISO based repositories
+you will need to do one of the following options.  Vcrepo will look to see if your using option 1 first and then try option 2 when running a sync, so you don't
+need to declare which one you're using. 
+
+##### Option 1 - Fstab
+Predefine the mount options for each ISO file in /etc/fstab.  For each ISO, add a line like:
+
+```
+/iso/dir/CentOS-7.0-1406-x86_64-DVD.iso  /repo_base_dir/iso/repository_name iso9660 loop,ro,user,noauto 0 0
+```
+Note the user option.  This is required to allow non-root to mount/unmount the filesystem.
+
+Pros:
+   * Security types are probably less likely to have a coniption.
+
+Cons:
+   * In addition to adding the repository definition to the vcrepo config file, you will have to update fstab for each ISO file.
+
+##### Option 2 - Sudo
+Install the 'sudo' program and add something like this to your /etc/sudoers:
+
+```
+apache ALL = (root) NOPASSWD: /bin/mount, /bin/umount
+```
+
+Pros:
+   * No additional work to do for each ISO you want to use.  Set this up once and then just add ISO repository definitions to your config at your leisure.
+
+Cons:
+   * Security people may take issue with it.
+
 ### API
 There is some documentation for the API in the [API Doc](docs/api.md)
 

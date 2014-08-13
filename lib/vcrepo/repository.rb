@@ -25,6 +25,8 @@ module Vcrepo
           @@repositories[name] = Vcrepo::Repository::Yum.new(name, source, type)
         when 'apt'
           @@repositories[name] = Vcrepo::Repository::Apt.new(name, source, type)
+        when 'iso'
+          @@repositories[name] = Vcrepo::Repository::Iso.new(name, source, type)
         else
           #Just create a generic file repository with basic sync options and no metadata generation
           @@repositories[name] = Vcrepo::Repository.new(name, source)
@@ -68,7 +70,7 @@ module Vcrepo
       
       #Progress through setting up the repo as log as enabled remains true
       (@enabled = (@logger   = create_log                  ) ? true : false) if @enabled
-      (@enabled = (@dir      = git_dir                   ) ? true : false) if @enabled
+      (@enabled = (@dir      = git_dir                     ) ? true : false) if @enabled
       (@enabled = (@git_repo = Vcrepo::Git.new(@dir, @name)) ? true : false) if @enabled
       (@enabled = (package_dir                             ) ? true : false) if @enabled
     end
@@ -112,13 +114,6 @@ module Vcrepo
         git_repo.commit
         logger.info('Sync complete')
       else
-        tmp_work_dir = File.join(Vcrepo.config['repo_base_dir'], ".#{@name}-#{Time.new.to_i}")
-  
-        #create and use a temporary work dir so manual stuff in the normal work dir doesnt get in the way
-        unless File.directory?(tmp_work_dir)
-          FileUtils.mkdir_p(tmp_work_dir)
-        end
-  
         #Check the master branch out to the temp work dir.
         git_repo.hard_checkout("master", tmp_work_dir)
   
@@ -197,6 +192,15 @@ module Vcrepo
         end
       end
       dir
+    end
+
+    def tmp_work_dir
+      tmpdir = File.join(Vcrepo.config['repo_base_dir'], @name)
+      #create and use a temporary work dir so manual stuff in the normal work dir doesnt get in the way
+      unless File.directory?(tmpdir)
+        FileUtils.mkdir_p(tmpdir)
+      end
+      tmpdir
     end
 
     def package_cache_dir(package=nil)
@@ -294,3 +298,4 @@ end
 
 require_relative 'repository/yum'
 require_relative 'repository/apt'
+require_relative 'repository/iso'
