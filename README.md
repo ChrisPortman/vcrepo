@@ -70,8 +70,9 @@ The key for the repo, in this case 'shinyrepo_myos_osvers_myarch' can be whateve
 Valid types are:
    - yum
    - apt
+   - iso
 
-Note that the type is not indicative of the upstream source.  The upstream may just be a bunch of package file in a directory.
+Note that the type is not indicative of the upstream source.  The upstream may just be a bunch of package file in a directory.  The ISO type is a bit different in that it doesn't really refer to the source repo type or the desired repo type. It basically means that the repo is hosted on an ISO, which being read-only, is what it is and Vcrepo will mearly mount it and make it browsable.
 
 Valid source configs look like:
 
