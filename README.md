@@ -91,6 +91,10 @@ source: redhat_yum://yum_repos_d_config_name
 
 # Sync from an APT repository
 source: deb http://mirror.optusnet.com.au/linuxmint/packages distribution component1 componentN
+
+# Mount and present an ISO for the repository
+source: 'iso:///var/isos/CentOS-7.0-1406-x86_64-DVD.iso'
+
 ```
 
 ### The Client
