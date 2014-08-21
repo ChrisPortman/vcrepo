@@ -105,16 +105,17 @@ module Vcrepo
     def sign_rpms
       if gpg_name = Vcrepo.config['gpg_key_name'] and check_gpg_key
         logger.info("Signing RPMS...")
-        pty = PTY.spawn("rpm -D '%_signature gpg' -D '%_gpg_name #{gpg_name}' --resign #{File.join(package_dir, '*.rpm')}") do |r,w,p|
+        PTY.spawn("rpm -D '%_signature gpg' -D '%_gpg_name #{gpg_name}' --resign #{File.join(package_dir, '*.rpm')}") do |r,w,p|
           r.expect('Enter pass phrase:', 5) do
             logger.info("Passphrase requested, sending password")
             w.puts (Vcrepo.config['gpg_key_pass'] || "")
           end
+          r.each { |line| logger.info(line) }
           logger.info("Sleeping for 3 secs")
           sleep 3
           logger.info("Done sleeping")
         end
-        logger.info("PTY is: #{pty.inspect}")
+        logger.info("Signing RPMs complete")
       else
         logger.info("No valid GPG key for signing... Skipping")
       end  
