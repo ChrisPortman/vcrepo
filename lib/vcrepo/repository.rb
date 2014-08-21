@@ -260,6 +260,7 @@ module Vcrepo
       packages_dir = package_cache_dir(file)
 
       newfile = File.join(packages_dir, File.basename(file))
+      logger.info("Linking #{file} to #{newfile}")
       File.exists?(newfile) ? FileUtils.rm(file) : FileUtils.mv(file, newfile)
       
       FileUtils.ln_s(newfile, file)
