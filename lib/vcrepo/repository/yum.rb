@@ -81,7 +81,7 @@ module Vcrepo
     end
 
     def generate_repo
-      #sign_rpms
+      sign_rpms
       system('which createrepo > /dev/null 2>&1') or
         raise RepoError, "Program, 'createrepo' is not available in the path"
       %x{createrepo -C --database --update #{package_dir}}
@@ -110,7 +110,11 @@ module Vcrepo
             logger.info("Passphrase requested, sending password")
             w.puts (Vcrepo.config['gpg_key_pass'] || "")
           end
+          logger.info("Sleeping for 3 secs")
+          sleep 3
+          logger.info("Done sleeping")
         end
+        logger.info("PTY is: #{pty.inspect}")
       else
         logger.info("No valid GPG key for signing... Skipping")
       end  
