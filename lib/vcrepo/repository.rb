@@ -256,12 +256,14 @@ module Vcrepo
       end
     end
 
-    def link_package(file)
+    def link_package(file, force=true)
       unless File.symlink?(file)
         packages_dir = package_cache_dir(file)
   
         newfile = File.join(packages_dir, File.basename(file))
         logger.info("Linking #{file} to #{newfile}")
+        
+        FileUtils.rm(newfile) if File.exists?(newfile) and force
         
         if File.exists?(newfile)
           logger.info("Package already in cache, removing and linking: #{newfile}")
