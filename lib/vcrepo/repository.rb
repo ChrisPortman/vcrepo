@@ -251,7 +251,7 @@ module Vcrepo
         package_files << Dir.glob(File.join(git_repo.workdir, '**', pattern))
       end
 
-      package_files.flatten.each do |file|
+      package_files.flatten.sort.each do |file|
         link_package(file)
       end
     end
