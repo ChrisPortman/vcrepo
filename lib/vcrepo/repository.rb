@@ -109,8 +109,8 @@ module Vcrepo
       if source =~ /^local/
         #This should make the repo look like the last commit on Master without clobering any manual adds since (we want to add those)
         git_repo.safe_checkout("master")
-        prepare_repo
         generate_repo
+        prepare_repo
         git_repo.commit
         logger.info('Sync complete')
       else
@@ -124,8 +124,8 @@ module Vcrepo
           logger.error("Sync of repository #{@name} failed: #{e.message}")
         else
           #Move the packages to the cache and generate metadata then commit
-          prepare_repo
           generate_repo
+          prepare_repo
           git_repo.commit
           logger.info('Sync complete')
         end

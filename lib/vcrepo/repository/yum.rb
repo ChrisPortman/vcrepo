@@ -81,7 +81,7 @@ module Vcrepo
     end
 
     def generate_repo
-      sign_rpms
+      #sign_rpms
       system('which createrepo > /dev/null 2>&1') or
         raise RepoError, "Program, 'createrepo' is not available in the path"
       %x{createrepo -C --database --update #{package_dir}}
