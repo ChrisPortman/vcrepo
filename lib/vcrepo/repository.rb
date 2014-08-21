@@ -257,13 +257,15 @@ module Vcrepo
     end
 
     def link_package(file)
-      packages_dir = package_cache_dir(file)
-
-      newfile = File.join(packages_dir, File.basename(file))
-      logger.info("Linking #{file} to #{newfile}")
-      File.exists?(newfile) ? FileUtils.rm(file) : FileUtils.mv(file, newfile)
-      
-      FileUtils.ln_s(newfile, file)
+      unless File.symlink?(file)
+        packages_dir = package_cache_dir(file)
+  
+        newfile = File.join(packages_dir, File.basename(file))
+        logger.info("Linking #{file} to #{newfile}")
+        File.exists?(newfile) ? FileUtils.rm(file) : FileUtils.mv(file, newfile)
+        
+        FileUtils.ln_s(newfile, file)
+      end
     end
 
     def file?(file, release='master')
