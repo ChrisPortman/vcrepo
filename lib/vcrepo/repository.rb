@@ -124,8 +124,8 @@ module Vcrepo
           logger.error("Sync of repository #{@name} failed: #{e.message}")
         else
           #Move the packages to the cache and generate metadata then commit
-          generate_repo
           prepare_repo
+          generate_repo
           git_repo.commit
           logger.info('Sync complete')
         end
