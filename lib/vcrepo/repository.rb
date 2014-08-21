@@ -131,7 +131,7 @@ module Vcrepo
         end
   
         #remove the temporary work dir
-        FileUtils.rm_rf(tmp_work_dir) if tmp_work_dir
+        #FileUtils.rm_rf(tmp_work_dir) if tmp_work_dir
       end
   
       #Set the workdir of the GIT repo back to the real one
