@@ -262,7 +262,14 @@ module Vcrepo
   
         newfile = File.join(packages_dir, File.basename(file))
         logger.info("Linking #{file} to #{newfile}")
-        File.exists?(newfile) ? FileUtils.rm(file) : FileUtils.mv(file, newfile)
+        
+        if File.exists?(newfile)
+          logger.info("Package already in cache, removing and linking: #{newfile}")
+          FileUtils.rm(file)
+        else
+          logger.info("Package NOT in cache, moving and linking: #{newfile}")
+          FileUtils.mv(file, newfile)
+        end
         
         FileUtils.ln_s(newfile, file)
       end
