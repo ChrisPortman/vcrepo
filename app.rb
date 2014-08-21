@@ -191,7 +191,7 @@ class Vcrepo::App < Sinatra::Base
   end
 
   get '/?:repo?/?*' do
-    @rev       = Vcrepo.config['default_revision'] ||'master'
+    @rev       = Vcrepo.config['default_revision'] || 'master'
     @repo_name = params[:repo]
     @path      = params[:splat].first
     generate_output()

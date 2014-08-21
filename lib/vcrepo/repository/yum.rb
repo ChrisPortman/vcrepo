@@ -1,4 +1,6 @@
 require 'fileutils'
+require 'pty'
+require 'expect'
 
 module Vcrepo
   class Repository::Yum < Vcrepo::Repository
@@ -79,9 +81,54 @@ module Vcrepo
     end
 
     def generate_repo
+      sign_rpms
       system('which createrepo > /dev/null 2>&1') or
         raise RepoError, "Program, 'createrepo' is not available in the path"
       %x{createrepo -C --database --update #{package_dir}}
+      sign_repodata
+    end
+
+    def check_gpg_key
+      keyname = Vcrepo.config['gpg_key_name']
+      if `gpg --list-keys #{keyname}`.match(/#{keyname}/)
+        keyfile = File.join(package_dir, "RPM-GPG-KEY-#{keyname}")
+        unless File.exist?(keyfile)
+          logger.info("Putting GPG public key into repository (#{keyfile})")
+          system("gpg --export -a VCRepo > #{keyfile}")
+        end
+        true
+      else
+        false
+      end
+    end
+
+    def sign_rpms
+      if gpg_name = Vcrepo.config['gpg_key_name'] and check_gpg_key
+        logger.info("Signing RPMS...")
+        pty = PTY.spawn("rpm -D '%_signature gpg' -D '%_gpg_name #{gpg_name}' --resign #{File.join(package_dir, '*.rpm')}") do |r,w,p|
+          r.expect('Enter pass phrase:', 5) do
+            logger.info("Passphrase requested, sending password")
+            w.puts (Vcrepo.config['gpg_key_pass'] || "")
+          end
+        end
+      else
+        logger.info("No valid GPG key for signing... Skipping")
+      end  
+    end
+
+    def sign_repodata
+      if gpg_name = Vcrepo.config['gpg_key_name'] and check_gpg_key
+        sigfile = File.join(package_dir, 'repodata', 'repomd.xml.asc')
+        File.delete(sigfile) if File.exist?(sigfile)
+        
+        passphrase = Vcrepo.config['gpg_key_pass'] || ""
+        logger.info("Signing Repodata...")
+
+        command = "echo #{passphrase} | gpg --detach-sign --armor -u #{gpg_name} --batch --passphrase-fd 0 #{File.join(package_dir, 'repodata', 'repomd.xml')}"
+        system(command)
+      else
+        logger.info("No valid GPG key for signing... Skipping")
+      end  
     end
   end
 end

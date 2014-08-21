@@ -285,6 +285,73 @@ Pros:
 Cons:
    * Security people may take issue with it.
 
+### GPG Signing
+
+GPG processes are particularly difficult to automate due to pass phrases and the like.  Storing passphrases in config files compromises the GPG integrity sort of defeating the purpose in the first place.
+Consider the following work flow if you want to provide GPG secured repos to your systems.  The idea is that production repos will be branched from the git commit that represents the repo you want to use in production
+ensuring that the rpms included in that revision are signed with your GPG key and that the repodata for that version is signed and that the key is presented for download by the clients within the repo.
+
+#### Create the gpg key
+
+Do this once to create the GPG key and register it with RPM.
+
+```
+[root@host]# gpg --gen-key
+gpg (GnuPG) 2.0.14; Copyright (C) 2009 Free Software Foundation, Inc.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+gpg: keyring `/home/cportman/.gnupg/secring.gpg' created
+Please select what kind of key you want:
+   (1) RSA and RSA (default)
+   (2) DSA and Elgamal
+   (3) DSA (sign only)
+   (4) RSA (sign only)
+Your selection? 1
+RSA keys may be between 1024 and 4096 bits long.
+What keysize do you want? (2048) 2048
+Requested keysize is 2048 bits
+Please specify how long the key should be valid.
+         0 = key does not expire
+      <n>  = key expires in n days
+      <n>w = key expires in n weeks
+      <n>m = key expires in n months
+      <n>y = key expires in n years
+Key is valid for? (0) 0
+Key does not expire at all
+Is this correct? (y/N) y
+
+GnuPG needs to construct a user ID to identify your key.
+
+Real name: Repos
+Email address: repos@company.org
+Comment: Company Package Repository
+You selected this USER-ID:
+    "Repos (Company Package Repository) <repos@company.org>"
+
+Change (N)ame, (C)omment, (E)mail or (O)kay/(Q)uit? O
+You need a Passphrase to protect your secret key.
+
+We need to generate a lot of random bytes. It is a good idea to perform
+some other action (type on the keyboard, move the mouse, utilize the
+disks) during the prime generation; this gives the random number
+generator a better chance to gain enough entropy.
+
+<wait a long time>
+
+[root@host]# gpg --list-keys
+/root/.gnupg/pubring.gpg
+------------------------
+pub   2048R/110F821C 2014-08-14
+uid                  Repos (Company Package Repository) <repos@company.org>
+sub   2048R/1C4CF304 2014-08-14
+
+[root@host]# gpg --export -a Repo > /etc/pki/rpm-gpg/RPM-GPG-KEY-Repo
+[root@host]# rpm --import RPM-GPG-KEY-Repo
+```
+
+#### 
+
 ### API
 There is some documentation for the API in the [API Doc](docs/api.md)
 

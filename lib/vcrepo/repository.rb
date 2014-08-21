@@ -195,7 +195,7 @@ module Vcrepo
     end
 
     def tmp_work_dir
-      tmpdir = File.join(Vcrepo.config['repo_base_dir'], @name)
+      tmpdir = File.join(Vcrepo.config['repo_base_dir'], ".#{@name}")
       #create and use a temporary work dir so manual stuff in the normal work dir doesnt get in the way
       unless File.directory?(tmpdir)
         FileUtils.mkdir_p(tmpdir)
