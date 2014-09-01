@@ -84,7 +84,8 @@ describe "Vcrepo::Repository" do
   
   context "execute_sync" do
     it "should call certain processes for local repos" do
-      repo = Vcrepo::Repository.new('test_repo', 'local')
+      settings = { 'source' => 'local' }
+      repo = Vcrepo::Repository.new('test_repo', settings)
       repo.expects(:lock).returns(true)
       Vcrepo::Git.any_instance.expects(:safe_checkout).returns(true)
       repo.expects(:prepare_repo).returns(true)
@@ -97,7 +98,8 @@ describe "Vcrepo::Repository" do
   
   context "lock" do
     it "Should create a lock file in the GIT directory" do
-      repo = Vcrepo::Repository.new('test_repo', 'local')
+      settings = { 'source' => 'local' }
+      repo = Vcrepo::Repository.new('test_repo', settings)
       expect(File.exists?('/tmp/test_repos/generic/test_repo/.git/.locked')).to be false
       repo.lock
       expect(File.exists?('/tmp/test_repos/generic/test_repo/.git/.locked')).to be true
@@ -106,7 +108,8 @@ describe "Vcrepo::Repository" do
       
   context "unlock" do
     it "Should create a lock file in the GIT directory" do
-      repo = Vcrepo::Repository.new('test_repo', 'local')
+      settings = { 'source' => 'local' }
+      repo = Vcrepo::Repository.new('test_repo', settings)
       repo.lock
       expect(File.exists?('/tmp/test_repos/generic/test_repo/.git/.locked')).to be true
       repo.unlock
@@ -116,20 +119,23 @@ describe "Vcrepo::Repository" do
 
   context "locked?" do
     it "Should be false before a repo is locked" do
-      repo = Vcrepo::Repository.new('test_repo', 'local')
+      settings = { 'source' => 'local' }
+      repo = Vcrepo::Repository.new('test_repo', settings)
       expect(File.exists?('/tmp/test_repos/generic/test_repo/.git/.locked')).to be false
       expect(repo.locked?).to be false
     end
 
     it "Should be true after a repo is locked and without it being unlocked" do
-      repo = Vcrepo::Repository.new('test_repo', 'local')
+      settings = { 'source' => 'local' }
+      repo = Vcrepo::Repository.new('test_repo', settings)
       repo.lock
       expect(File.exists?('/tmp/test_repos/generic/test_repo/.git/.locked')).to be true
       expect(repo.locked?).to be true
     end
 
     it "Should be false after being locked and unlocked" do
-      repo = Vcrepo::Repository.new('test_repo', 'local')
+      settings = { 'source' => 'local' }
+      repo = Vcrepo::Repository.new('test_repo', settings)
       repo.lock
       expect(File.exists?('/tmp/test_repos/generic/test_repo/.git/.locked')).to be true
       repo.unlock
@@ -157,14 +163,16 @@ describe "Vcrepo::Repository" do
 
   context "sync_http" do
     it "should raise an error if lftp is not available" do
-      repo = Vcrepo::Repository.new('test_repo', 'local')
+      settings = { 'source' => 'local' }
+      repo = Vcrepo::Repository.new('test_repo', settings)
       repo.expects(:system).with('which lftp > /dev/null 2>&1').returns(false)
       expect{repo.sync_http}.to raise_error(RepoError)
     end
     
     describe "runs lftp with the appropriate options" do
       it "for yum repos that add includes and exclues options" do
-        repo = Vcrepo::Repository::Yum.new('test_repo', 'local', 'yum')
+        settings = { 'source' => 'local', 'type' => 'yum' }
+        repo = Vcrepo::Repository.create('test_repo', settings)
         repo.expects(:system).with('which lftp > /dev/null 2>&1').returns(true)
         repo.expects(:`).with('which lftp').returns('/bin/lftp')
         
@@ -179,7 +187,8 @@ describe "Vcrepo::Repository" do
       end
       
       it "for generic repos that DO NOT add includes and exclues options" do
-        repo = Vcrepo::Repository.new('test_repo', 'local')
+        settings = { 'source' => 'local' }
+        repo = Vcrepo::Repository.new('test_repo', settings)
         repo.expects(:system).with('which lftp > /dev/null 2>&1').returns(true)
         repo.expects(:`).with('which lftp').returns('/bin/lftp')
         

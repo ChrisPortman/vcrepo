@@ -1,6 +1,6 @@
 module Vcrepo
   class Repository
-    attr_reader :name, :source, :type, :dir, :enabled, :git_repo, :logger
+    attr_reader :name, :settings, :source, :type, :dir, :enabled, :git_repo, :logger
 
     ### Class Variables ###
     #Stores the repository object for each repository
@@ -19,17 +19,17 @@ module Vcrepo
       []  #No excludes
     end
 
-    def self.create(name, source, type)
-      case type
+    def self.create(name, settings)
+      case settings['type']
         when 'yum'
-          @@repositories[name] = Vcrepo::Repository::Yum.new(name, source, type)
+          @@repositories[name] = Vcrepo::Repository::Yum.new(name, settings)
         when 'apt'
-          @@repositories[name] = Vcrepo::Repository::Apt.new(name, source, type)
+          @@repositories[name] = Vcrepo::Repository::Apt.new(name, settings)
         when 'iso'
-          @@repositories[name] = Vcrepo::Repository::Iso.new(name, source, type)
+          @@repositories[name] = Vcrepo::Repository::Iso.new(name, settings)
         else
           #Just create a generic file repository with basic sync options and no metadata generation
-          @@repositories[name] = Vcrepo::Repository.new(name, source)
+          @@repositories[name] = Vcrepo::Repository.new(name, settings)
       end
     end
 
@@ -62,11 +62,12 @@ module Vcrepo
       end
     end
 
-    def initialize(name, source, type='generic')
+    def initialize(name, settings)
       @name     = name
-      @source   = source
-      @type     = type
-      @enabled  = true
+      @settings = settings
+      @source   = settings['source']
+      @type     = settings['type'] || 'generic'
+      @enabled  = (@source and @type) ? true : false
       
       #Progress through setting up the repo as log as enabled remains true
       (@enabled = (@logger   = create_log                  ) ? true : false) if @enabled
