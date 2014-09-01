@@ -7,13 +7,14 @@ require 'fileutils'
 
 module Vcrepo
   class Repository::Iso < Vcrepo::Repository
-    attr_reader :name, :source, :type, :dir, :enabled, :logger
+    attr_reader :name, :settings, :source, :type, :dir, :enabled, :logger
 
-    def initialize(name, source, type)
+    def initialize(name, settings)
       @name     = name
-      @source   = source
-      @type     = type
-      @enabled  = true
+      @settings = settings
+      @source   = settings['source']
+      @type     = settings['type']
+      @enabled  = (@source and @type) ? true : false
 
       #Progress through setting up the repo as log as enabled remains true
       (@enabled = (@logger = create_log ) ? true : false) if @enabled
