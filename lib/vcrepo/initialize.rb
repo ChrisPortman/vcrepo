@@ -58,7 +58,7 @@ module Vcrepo
     Vcrepo.testdirwrite(repo_base_dir)
 
     Vcrepo.config['repositories'].each do |repo, settings|
-      Vcrepo::Repository.create(repo, settings['source'], settings['type'])
+      Vcrepo::Repository.create(repo, settings)
     end
   end
 end
