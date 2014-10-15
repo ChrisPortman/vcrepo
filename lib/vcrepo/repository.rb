@@ -132,7 +132,7 @@ module Vcrepo
         end
   
         #remove the temporary work dir
-        #FileUtils.rm_rf(tmp_work_dir) if tmp_work_dir
+        FileUtils.rm_rf(tmp_work_dir) if tmp_work_dir
       end
   
       #Set the workdir of the GIT repo back to the real one
@@ -258,7 +258,9 @@ module Vcrepo
     end
 
     def link_package(file, force=true)
-      unless File.symlink?(file)
+      return if File.symlink?(file)
+
+      if File.size?(file)
         packages_dir = package_cache_dir(file)
   
         newfile = File.join(packages_dir, File.basename(file))
@@ -275,6 +277,8 @@ module Vcrepo
         end
         
         FileUtils.ln_s(newfile, file)
+      else
+        FileUtils.rm(file)
       end
     end
 
