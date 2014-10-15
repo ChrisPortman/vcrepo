@@ -65,7 +65,7 @@ module Vcrepo
         end
       end
 
-      yum_sync
+      sync_yum
     end
 
     def sync_yum
