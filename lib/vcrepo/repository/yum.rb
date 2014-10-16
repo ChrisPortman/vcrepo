@@ -74,7 +74,7 @@ module Vcrepo
 
       yum_repo = @source.split('://').last
 
-      sync_cmd = "reposync -r --norepopath #{yum_repo} -p #{package_dir}"
+      sync_cmd = "reposync -r #{yum_repo} -p #{package_dir}"
       IO.popen(sync_cmd).each do |line|
         logger.info( line.split("\n").first.chomp )
       end
