@@ -74,10 +74,14 @@ module Vcrepo
 
       yum_repo = @source.split('://').last
 
-      sync_cmd = "reposync -r #{yum_repo} -p #{package_dir}"
+      sync_cmd = "reposync -t #{cache_dir} -r #{yum_repo} -p #{package_dir}"
+      create_cachedir
+
       IO.popen(sync_cmd).each do |line|
         logger.info( line.split("\n").first.chomp )
       end
+      
+      remove_cachedir
     end
 
     def generate_repo
@@ -134,6 +138,21 @@ module Vcrepo
       else
         logger.info("No valid GPG key for signing... Skipping")
       end  
+    end
+    
+    def cache_dir
+      File.join(Vcrepo.config['repo_base_dir'], 'yum_caches', name)
+    end
+    
+    def create_cachedir
+      remove_cachedir
+      FileUtils.mkdir_p(cache_dir)
+    end
+    
+    def remove_cachedir
+      if File.exists?(cache_dir)
+        FileUtils.rm_rf(cache_dir)
+      end
     end
   end
 end
