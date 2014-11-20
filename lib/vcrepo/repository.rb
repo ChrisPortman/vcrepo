@@ -146,7 +146,7 @@ module Vcrepo
         http_sync_includes = self.class.respond_to?('http_sync_include') ? self.class.http_sync_include.collect { |inc| "-I #{inc}" }.join(' ') : ''
         http_sync_excludes = self.class.respond_to?('http_sync_exclude') ? self.class.http_sync_exclude.flatten.collect { |exc| "-X \"#{exc}\"" }.join(' ') : ''
 
-        sync_cmd = "#{`which lftp`.chomp} -c '; mirror -P -c -e -L -vvv #{http_sync_includes} #{http_sync_excludes} #{@source} #{package_dir}'".gsub(/\s+/, ' ')
+        sync_cmd = "#{`which lftp`.chomp} -c 'set net:reconnect-interval-base 0; mirror -P -c -e -L -vvv #{http_sync_includes} #{http_sync_excludes} #{@source} #{package_dir}'".gsub(/\s+/, ' ')
 
         IO.popen(sync_cmd).each do |line|
           logger.info( line.chomp )
