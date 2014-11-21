@@ -141,7 +141,7 @@ module Vcrepo
     end
     
     def cache_dir
-      File.join(Vcrepo.config['repo_base_dir'], 'yum_caches', name)
+      File.join(Vcrepo.config['repo_base_dir'], '.yum_caches', name)
     end
     
     def create_cachedir
