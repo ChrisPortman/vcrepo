@@ -82,8 +82,19 @@ module Vcrepo
     end
 
     def umount
-      command = [ 'umount', iso ]
-      command.unshift('sudo') unless in_fstab?
+      command = []
+      
+      unless Vcrepo::Util.root_user?
+        unless in_fstab?
+          Vcrepo::Util::can_sudo?('umount') or
+            raise RepoError, "Not running as root, therefore, Iso files either need to be in /etc/fstab or I need to be able to run umount via sudo to unmount isos"
+          command << 'sudo'
+        end
+      end
+      
+      command << [ 'umount', iso ]
+      command.flatten!
+
       logger.info( "Unmount command: #{command.join(' ')}" )
 
       if system(*command)
@@ -95,11 +106,19 @@ module Vcrepo
     end
 
     def mount
-      if in_fstab?
-        command = [ 'mount', iso ]
-      else
-        command = [ 'sudo', 'mount', '-o', 'loop,ro', iso, dir ]
+      command = []
+      
+      unless Vcrepo::Util.root_user?
+        unless in_fstab?
+          Vcrepo::Util::can_sudo?('mount') or
+            raise RepoError, "Not running as root, therefore, Iso files either need to be in /etc/fstab or I need to be able to run mount via sudo to mount isos"
+          command << 'sudo'
+        end
       end
+
+      command << [ 'mount', iso ]
+      command.flatten!
+      
       logger.info("Mount command: #{command.join(' ')}")
 
       if system(*command)

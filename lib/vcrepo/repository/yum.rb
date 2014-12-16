@@ -69,15 +69,24 @@ module Vcrepo
     end
 
     def sync_yum
-      system('which reposync > /dev/null 2>&1') or
+      Vcrepo::Util.command_available?('reposync') or
         raise RepoError, "Program, 'reposync' is not available in the path"
 
       yum_repo = @source.split('://').last
+      sync_cmd = []
 
-      sync_cmd = "reposync -t #{cache_dir} -r #{yum_repo} -p #{package_dir}"
+      unless Vcrepo::Util.root_user?
+        Vcrepo::Util.can_sudo?('reposync') or
+          raise RepoError, "I'm not running as root and need to sudo reposync but I'm not allowed"
+        
+        sync_cmd << 'sudo'
+      end
+        
+      sync_cmd << "reposync -r #{yum_repo} -p #{package_dir}".split(/\s+/)
+      
       create_cachedir
 
-      IO.popen(sync_cmd).each do |line|
+      IO.popen(sync_cmd.flatten).each do |line|
         logger.info( line.split("\n").first.chomp )
       end
       
@@ -86,9 +95,11 @@ module Vcrepo
 
     def generate_repo
       sign_rpms
+      logger.info("Generating repo metadata...")
       system('which createrepo > /dev/null 2>&1') or
         raise RepoError, "Program, 'createrepo' is not available in the path"
       %x{createrepo -C --database --update #{package_dir}}
+      logger.info("Generating repo metadata complete")
       sign_repodata
     end
 
@@ -127,6 +138,7 @@ module Vcrepo
 
     def sign_repodata
       if gpg_name = Vcrepo.config['gpg_key_name'] and check_gpg_key
+        logger.info("Signing repo metadata...")
         sigfile = File.join(package_dir, 'repodata', 'repomd.xml.asc')
         File.delete(sigfile) if File.exist?(sigfile)
         
@@ -135,6 +147,7 @@ module Vcrepo
 
         command = "echo #{passphrase} | gpg --detach-sign --armor -u #{gpg_name} --batch --passphrase-fd 0 #{File.join(package_dir, 'repodata', 'repomd.xml')}"
         system(command)
+        logger.info("Signing repo metadata complete")
       else
         logger.info("No valid GPG key for signing... Skipping")
       end  

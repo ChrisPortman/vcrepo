@@ -59,7 +59,7 @@ class Vcrepo::App < Sinatra::Base
     def generate_output
       begin
         if @repo_name
-          if repo = Vcrepo::Repository.find(@repo_name)
+          if repo = Vcrepo::Repository.load(@repo_name)
             if @path.empty?
               contents = repo.contents(nil, @rev)
               dirs  = contents.select { |item| item[:type] == :tree }.collect { |tree| tree[:name].to_s }.sort
@@ -83,7 +83,7 @@ class Vcrepo::App < Sinatra::Base
             [ 404, "No such repository" ]
           end
         else
-          show_dir(Vcrepo::Repository.all_enabled.keys.sort)
+          show_dir(Vcrepo::Repository.all_enabled.collect {|r| r.name}.sort)
         end
       rescue RepoError => e
         [ e.status, e.message ].to_json

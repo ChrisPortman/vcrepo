@@ -19,6 +19,15 @@ class FileSystemError < RuntimeError
   attr_reader 'status'
 end
 
+class CommandNotFound < RuntimeError
+  def initialize(message, status=500)
+    @status = status
+    super(message)
+  end
+
+  attr_reader 'status'
+end
+
 class ConfigError < RuntimeError
   def initialize(message, status=500)
     @status = status
@@ -29,6 +38,7 @@ class ConfigError < RuntimeError
 end
 
 require_relative 'vcrepo/config'
+require_relative 'vcrepo/util'
 require_relative 'vcrepo/git'
 require_relative 'vcrepo/initialize'
 require_relative 'vcrepo/repository'

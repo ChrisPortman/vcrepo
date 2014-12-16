@@ -1,4 +1,4 @@
-#!/bin/env ruby
+#!/usr/bin/env ruby
 if RUBY_VERSION =~ /^1\.8/
   require 'require_relative'
 end

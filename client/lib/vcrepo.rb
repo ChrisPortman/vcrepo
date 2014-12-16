@@ -25,12 +25,13 @@ module Vcrepo
     end
     
     def callapi(uri)
+      uri = URI.escape(uri)
       url = URI.join(host, uri)
       response = Net::HTTP.get_response(url)
       begin
         JSON.parse(response.body)
       rescue
-        response.body
+        raise RuntimeError, response.body
       end
     end
   end

@@ -56,9 +56,5 @@ module Vcrepo
       raise ConfigError, "repo_base_dir must be set in the configuration"
     end
     Vcrepo.testdirwrite(repo_base_dir)
-
-    Vcrepo.config['repositories'].each do |repo, settings|
-      Vcrepo::Repository.create(repo, settings)
-    end
   end
 end

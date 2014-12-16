@@ -19,41 +19,29 @@ module Vcrepo
       []  #No excludes
     end
 
-    def self.create(name, settings)
-      case settings['type']
-        when 'yum'
-          @@repositories[name] = Vcrepo::Repository::Yum.new(name, settings)
-        when 'apt'
-          @@repositories[name] = Vcrepo::Repository::Apt.new(name, settings)
-        when 'iso'
-          @@repositories[name] = Vcrepo::Repository::Iso.new(name, settings)
-        else
-          #Just create a generic file repository with basic sync options and no metadata generation
-          @@repositories[name] = Vcrepo::Repository.new(name, settings)
-      end
-    end
-
     def self.all
-      @@repositories
+      repos = []
+      Dir.glob(File.join( repo_configs_dir, '*.yaml' )).each do |f|
+        repos.push( self.load( File.basename(f, '.yaml') ) )
+      end
+      repos
     end
 
     def self.all_enabled
       #Check the disabled ones
-      @@repositories.select{ |key,val| !val.enabled }.each do |name, repo|
-        create(repo.name, repo.source, repo.type)
-      end
-      
-      @@repositories.select{ |key,val| val.enabled }
+      self.all.select { |r| r.enabled }
     end
 
-    def self.find(name)
-      ret = nil
-      self.all.each do |n,repo|
-        if name == n
-          ret = repo
-        end
-      end
-      ret
+    def self.repo_configs_dir
+      File.join(Vcrepo.config['repo_base_dir'], 'repos.d')
+    end
+
+    def self.config_file(name)
+      File.join(self.repo_configs_dir, "#{name}.yaml")
+    end
+
+    def config_file
+      File.join(self.class.repo_configs_dir, "#{name}.yaml")
     end
 
     def self.sync_all
@@ -62,11 +50,38 @@ module Vcrepo
       end
     end
 
-    def initialize(name, settings)
-      @name     = name
-      @settings = settings
-      @source   = settings['source']
+    def self.load(name)
+      if @@repositories[name]
+        settings = @@repositories[name]
+      else
+        begin
+          settings = File::open(config_file(name), 'r') { |fh| YAML::load(fh) } || {}
+        rescue Errno::ENOENT
+          raise RuntimeError, "The config file for repo #{name} does not exist"
+        rescue Errno::EACCES
+          raise RuntimeError, "The config file for repo #{name} is not readable"
+        end
+        settings['name'] = name
+        @@repositories[name] = settings
+      end
+
+      if type = settings['type']
+        begin
+          repo = self.const_get(type.capitalize).new(settings)
+        rescue Exception => e
+          puts e.message
+          repo = Vcrepo::Repository.new(settings)
+        end
+      else
+        repo = Vcrepo::Repository.new(settings)
+      end
+      repo
+    end
+
+    def initialize(settings)
+      @name     = settings['name']
       @type     = settings['type'] || 'generic'
+      @source   = settings['source']
       @enabled  = (@source and @type) ? true : false
       
       #Progress through setting up the repo as log as enabled remains true
@@ -215,7 +230,7 @@ module Vcrepo
           if index = filebase.match(/^#{i}/)
             index[0]
           end
-        end.compact.first
+        end .compact.first
       end      
 
       dir = File.join([Vcrepo.config['repo_base_dir'], 'package_cache', extension, index_path].compact)
@@ -227,7 +242,7 @@ module Vcrepo
 
     def create_log
       log_dir  = Vcrepo.config['logdir'] || './logs'
-      log_file = File.join(log_dir, @name)
+      log_file = File.join(log_dir, name)
       logger   = nil
 
       begin
