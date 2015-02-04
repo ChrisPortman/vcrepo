@@ -4,7 +4,7 @@ module Vcrepo
     def self.valid?(*args)
       args     = args.first
       reponame = args.shift
-      if repo = Vcrepo::Repository.find(reponame)
+      if repo = Vcrepo::Repository.load(reponame)
         repo.git_repo ? true : false
       else
         false
@@ -17,7 +17,7 @@ module Vcrepo
 
     #Getters for collection and individuals.
     def self.collect(reponame)
-      if repo = Vcrepo::Repository.find(reponame)
+      if repo = Vcrepo::Repository.load(reponame)
         repo = repo.git_repo.repo
         if branches = repo.branches
           branches.collect { |b| b.name }
@@ -35,7 +35,7 @@ module Vcrepo
       id       = args.shift
 
       if id
-        if repo = Vcrepo::Repository.find(reponame)
+        if repo = Vcrepo::Repository.load(reponame)
           repo = repo.git_repo.repo
 
           if branch = repo.branches[id]

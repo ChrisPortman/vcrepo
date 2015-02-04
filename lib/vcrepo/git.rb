@@ -167,7 +167,7 @@ module Vcrepo
 
     def updates?
       if head_commit = find_commit("master")
-          package_repo     = Vcrepo::Repository.find(@package_repo)
+          package_repo     = Vcrepo::Repository.load(@package_repo)
           package_patterns = package_repo.class.respond_to?('package_patterns') ? package_repo.class.package_patterns : ['*']
           diff = head_commit.tree.diff_workdir(:recurse_untracked_dirs => true, :include_untracked => true, :paths => package_patterns)
           diff.deltas.empty? ? false : true
